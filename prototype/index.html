@@ -283,7 +283,7 @@
   <section class="intro">
     <div>
       <h1>Water at your gate <em>within the hour.</em></h1>
-      <p>Compare verified tanker owners near you by capacity, water source, arrival time and price. Book in a minute, pay by UPI or cash, and track the lorry until it reaches your sump.</p>
+      <p>Now serving Coimbatore: Saravanampatti, Peelamedu, Gandhipuram, RS Puram, Vadavalli, Singanallur and Kuniyamuthur. Compare verified tanker owners near you by capacity, water source, arrival time and price. Book in a minute, pay by UPI or cash, and track the lorry until it reaches your sump.</p>
     </div>
     <div class="stats" aria-label="Network today (sample figures)">
       <div class="stat"><b id="stat-online">46</b><span>tankers online nearby</span></div>
@@ -298,7 +298,7 @@
         <div class="row">
           <div class="field">
             <label class="label" for="addr">Delivery address</label>
-            <input id="addr" value="14, 3rd Cross St, Vijayanagar, Velachery, Chennai 600042">
+            <input id="addr" value="22, Kurinji Nagar, Sathy Road, Saravanampatti, Coimbatore 641035">
           </div>
           <div class="field">
             <label class="label" for="when">When</label>
@@ -321,7 +321,7 @@
             <span class="label" id="lbl-src">Water source</span>
             <div class="seg" role="group" aria-labelledby="lbl-src" data-filter="src">
               <button type="button" data-v="all" aria-pressed="true">All</button>
-              <button type="button" data-v="treated" aria-pressed="false">Treated / Metro</button>
+              <button type="button" data-v="treated" aria-pressed="false">Treated / RO</button>
               <button type="button" data-v="bore" aria-pressed="false">Borewell</button>
             </div>
           </div>
@@ -339,7 +339,7 @@
 
       <div class="map" aria-label="Map of tankers near your address">
         <svg id="map" viewBox="0 0 800 300" role="img" aria-labelledby="map-title">
-          <title id="map-title">Tankers around Velachery</title>
+          <title id="map-title">Tankers around Saravanampatti</title>
           <rect width="800" height="300" fill="var(--map-bg)"/>
           <g fill="var(--map-block)">
             <rect x="20" y="20" width="150" height="80" rx="6"/><rect x="200" y="20" width="170" height="80" rx="6"/>
@@ -352,8 +352,7 @@
           <g stroke="var(--map-road)" stroke-width="14" fill="none">
             <path d="M0 115 H800"/><path d="M0 215 H800"/><path d="M185 0 V300"/><path d="M385 0 V300"/><path d="M535 0 V300"/>
           </g>
-          <path d="M650 170 C700 170 720 245 790 250" stroke="var(--water)" stroke-opacity=".35" stroke-width="18" fill="none"/>
-          <text x="700" y="160" font-size="12" fill="var(--ink-soft)" font-family="Figtree, sans-serif">Velachery Lake</text>
+                    <text x="600" y="111" font-size="11" font-weight="600" fill="var(--ink-soft)" font-family="Figtree, sans-serif">SATHY ROAD</text>
           <path id="route" d="" stroke="var(--water)" stroke-width="4" stroke-dasharray="8 6" fill="none"/>
           <g id="markers"></g>
           <g id="home" transform="translate(460 165)">
@@ -407,12 +406,12 @@
 (function () {
   var HOME = { x: 460, y: 165 };
   var TANKERS = [
-    { id: 1, owner: "Murugan Water Supply", plate: "TN 22 BK 4417", kl: 12, src: "treated", eta: 22, km: 3.1, rating: 4.8, trips: 1240, price: 1450, x: 300, y: 115 },
-    { id: 2, owner: "Sri Balaji Tankers", plate: "TN 09 CX 2081", kl: 6, src: "bore", eta: 15, km: 1.8, rating: 4.6, trips: 860, price: 750, x: 535, y: 60 },
-    { id: 3, owner: "Anna Aqua Movers", plate: "TN 07 AZ 9930", kl: 9, src: "treated", eta: 38, km: 5.6, rating: 4.9, trips: 2010, price: 1150, x: 90, y: 215 },
-    { id: 4, owner: "Lakshmi Transport", plate: "TN 11 H 6602", kl: 24, src: "bore", eta: 50, km: 7.4, rating: 4.5, trips: 540, price: 2600, x: 720, y: 115 },
-    { id: 5, owner: "Green Drop Mini", plate: "TN 22 DE 1175", kl: 3, src: "treated", eta: 12, km: 1.2, rating: 4.7, trips: 3120, price: 480, x: 385, y: 250 },
-    { id: 6, owner: "Kaveri Water Carriers", plate: "TN 14 R 3308", kl: 12, src: "bore", eta: 30, km: 4.3, rating: 4.4, trips: 690, price: 1250, x: 185, y: 40 }
+    { id: 1, owner: "Kongu Water Supply", plate: "TN 66 BK 4417", kl: 12, src: "treated", eta: 22, km: 3.1, rating: 4.8, trips: 1240, price: 1450, x: 300, y: 115 },
+    { id: 2, owner: "Sri Balaji Tankers", plate: "TN 38 CX 2081", kl: 6, src: "bore", eta: 15, km: 1.8, rating: 4.6, trips: 860, price: 750, x: 535, y: 60 },
+    { id: 3, owner: "Maruthamalai Aqua Movers", plate: "TN 37 AZ 9930", kl: 9, src: "treated", eta: 38, km: 5.6, rating: 4.9, trips: 2010, price: 1150, x: 90, y: 215 },
+    { id: 4, owner: "Lakshmi Transport", plate: "TN 38 H 6602", kl: 24, src: "bore", eta: 50, km: 7.4, rating: 4.5, trips: 540, price: 2600, x: 720, y: 115 },
+    { id: 5, owner: "Kovai Mini Tank", plate: "TN 66 DE 1175", kl: 3, src: "treated", eta: 12, km: 1.2, rating: 4.7, trips: 3120, price: 480, x: 385, y: 250 },
+    { id: 6, owner: "Perur Water Carriers", plate: "TN 99 R 3308", kl: 12, src: "bore", eta: 30, km: 4.3, rating: 4.4, trips: 690, price: 1250, x: 185, y: 40 }
   ];
   var PLATFORM_FEE = 29;
   var state = { src: "all", cap: "all", selected: 1, order: null };
@@ -420,7 +419,7 @@
   var $ = function (id) { return document.getElementById(id); };
   var rupee = function (n) { return "₹" + n.toLocaleString("en-IN"); };
   var litres = function (kl) { return (kl * 1000).toLocaleString("en-IN") + " L"; };
-  var srcLabel = function (s) { return s === "treated" ? "Treated / Metro" : "Borewell"; };
+  var srcLabel = function (s) { return s === "treated" ? "Treated / RO" : "Borewell"; };
 
   function capMatch(t) {
     if (state.cap === "small") return t.kl <= 6;
