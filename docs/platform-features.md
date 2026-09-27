@@ -107,18 +107,7 @@ Most tanker apps only let you book a tanker. NeerNow also shows the customer how
 
 ## Suggested tech stack
 
-| Part | Choice |
-|---|---|
-| Customer and admin web | Next.js (React) + TypeScript |
-| Owner/driver mobile app | React Native or Flutter (background GPS, camera, offline queue) |
-| API | Node.js (NestJS) or Django |
-| Database | PostgreSQL + PostGIS, Redis for live locations and rate limits |
-| Real-time | Socket.IO / WebSocket |
-| Maps | Google Maps Platform or Mappls |
-| Payments | Razorpay or Cashfree (UPI, payment on hold/capture) |
-| SMS/OTP/WhatsApp | MSG91 or Gupshup |
-| Masked calls | Exotel |
-| Hosting | AWS Mumbai region or DigitalOcean Bangalore, with Cloudflare in front |
+See `docs/technology-architecture.md` for the full stack, architecture diagram, OTP and data-protection design, and running costs.
 
 ## Suggested build order
 

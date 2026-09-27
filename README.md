@@ -10,7 +10,7 @@ A portal, launching first in Coimbatore, that connects households, apartments an
 - **Tanker owner:** accept or decline order requests, fleet with GPS and document-expiry status, price card limited by zone caps, weekly payouts.
 - **Admin:** live fleet map, safety and fraud alerts, owner verification queue, complaints with refunds, security status, audit log.
 
-See `docs/platform-features.md` for the full feature, GPS and security plan.
+See `docs/platform-features.md` for the full feature, GPS and security plan, and `docs/technology-architecture.md` for the technology stack and how OTP, contact details and payments are secured.
 
 ## Launch city: Coimbatore
 
