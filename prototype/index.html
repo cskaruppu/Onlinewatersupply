@@ -18,8 +18,10 @@
     --yellow-ink: #2B2100;
     --good: #1F8A55;
     --good-soft: #DDF3E7;
-    --warn: #B26B00;
+    --warn: #A86300;
     --warn-soft: #FBEBCF;
+    --bad: #C0392B;
+    --bad-soft: #FADBD7;
     --map-bg: #E4ECEF;
     --map-road: #FFFFFF;
     --map-block: #D6E2E7;
@@ -31,164 +33,118 @@
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       color-scheme: dark;
-      --ground: #0A1A24;
-      --surface: #112633;
-      --surface-2: #0E212C;
-      --ink: #E4EEF3;
-      --ink-soft: #97AEBB;
-      --line: #23404F;
-      --water: #4DB3DE;
-      --water-soft: #143A4C;
-      --yellow: #F5C230;
-      --yellow-ink: #221A00;
-      --good: #4CC98A;
-      --good-soft: #143828;
-      --warn: #E8A849;
-      --warn-soft: #3A2A10;
-      --map-bg: #0F2330;
-      --map-road: #1D3A4A;
-      --map-block: #15303E;
+      --ground: #0A1A24; --surface: #112633; --surface-2: #0E212C; --ink: #E4EEF3; --ink-soft: #97AEBB;
+      --line: #23404F; --water: #4DB3DE; --water-soft: #143A4C; --yellow: #F5C230; --yellow-ink: #221A00;
+      --good: #4CC98A; --good-soft: #143828; --warn: #E8A849; --warn-soft: #3A2A10; --bad: #F07A6C; --bad-soft: #3D1915;
+      --map-bg: #0F2330; --map-road: #1D3A4A; --map-block: #15303E;
       --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 20px rgba(0, 0, 0, .25);
     }
   }
   :root[data-theme="dark"] {
     color-scheme: dark;
-    --ground: #0A1A24;
-    --surface: #112633;
-    --surface-2: #0E212C;
-    --ink: #E4EEF3;
-    --ink-soft: #97AEBB;
-    --line: #23404F;
-    --water: #4DB3DE;
-    --water-soft: #143A4C;
-    --yellow: #F5C230;
-    --yellow-ink: #221A00;
-    --good: #4CC98A;
-    --good-soft: #143828;
-    --warn: #E8A849;
-    --warn-soft: #3A2A10;
-    --map-bg: #0F2330;
-    --map-road: #1D3A4A;
-    --map-block: #15303E;
+    --ground: #0A1A24; --surface: #112633; --surface-2: #0E212C; --ink: #E4EEF3; --ink-soft: #97AEBB;
+    --line: #23404F; --water: #4DB3DE; --water-soft: #143A4C; --yellow: #F5C230; --yellow-ink: #221A00;
+    --good: #4CC98A; --good-soft: #143828; --warn: #E8A849; --warn-soft: #3A2A10; --bad: #F07A6C; --bad-soft: #3D1915;
+    --map-bg: #0F2330; --map-road: #1D3A4A; --map-block: #15303E;
     --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 20px rgba(0, 0, 0, .25);
   }
 
   * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
   body {
-    margin: 0;
-    background: var(--ground);
-    color: var(--ink);
+    margin: 0; background: var(--ground); color: var(--ink);
     font: 15px/1.5 var(--body);
-    padding-inline: 16px;
-    padding-block: 0 48px;
+    padding-inline: 16px; padding-block: 0 48px;
   }
   h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; }
+  p { margin: 0; }
   button, input, select { font: inherit; color: inherit; }
   button { cursor: pointer; }
+  button:disabled { cursor: not-allowed; opacity: .55; }
   :focus-visible { outline: 3px solid var(--water); outline-offset: 2px; }
   .wrap { max-width: 1180px; margin-inline: auto; }
   .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
   .num { font-variant-numeric: tabular-nums; }
-  .label {
-    font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
-    color: var(--ink-soft);
-  }
+  .soft { color: var(--ink-soft); }
+  .label { font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+  .stack { display: grid; gap: 20px; }
 
-  /* Header */
-  .top {
-    display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
-    padding-block: 18px;
-  }
+  /* Header + role switch */
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 12px 16px; flex-wrap: wrap; padding-block: 16px; }
   .brand { display: flex; align-items: center; gap: 10px; font-family: var(--display); font-weight: 800; font-size: 22px; letter-spacing: -.01em; }
-  .brand svg { flex: none; }
-  .top nav { display: flex; gap: 6px; flex-wrap: wrap; }
-  .top nav a {
-    color: var(--ink-soft); text-decoration: none; font-weight: 600; font-size: 14px;
-    padding: 7px 12px; border-radius: 8px;
-  }
-  .top nav a:hover { background: var(--surface); color: var(--ink); }
-  .top nav a.owner { color: var(--ink); border: 1px solid var(--line); }
+  .brand small { font-family: var(--body); font-weight: 600; font-size: 12px; color: var(--ink-soft); letter-spacing: 0; }
+  .roles { display: flex; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 4px; gap: 4px; flex-wrap: wrap; }
+  .roles button { border: 0; background: transparent; border-radius: 9px; padding: 8px 14px; font-weight: 700; font-size: 14px; color: var(--ink-soft); }
+  .roles button[aria-selected="true"] { background: var(--ink); color: var(--surface); }
+  .session { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-soft); flex-wrap: wrap; }
+  .lock { display: inline-flex; align-items: center; gap: 5px; background: var(--good-soft); color: var(--good); font-weight: 700; font-size: 12px; padding: 3px 9px; border-radius: 999px; }
 
-  /* Intro strip */
-  .intro {
-    display: grid; grid-template-columns: 1.3fr 1fr; gap: 24px; align-items: end;
-    padding-block: 12px 24px;
-  }
-  .intro h1 { font-size: clamp(30px, 4.6vw, 48px); line-height: 1.05; letter-spacing: -.02em; font-weight: 800; }
-  .intro h1 em { font-style: normal; color: var(--water); }
-  .intro p { margin: 10px 0 0; color: var(--ink-soft); max-width: 58ch; }
-  .stats { display: flex; gap: 22px; flex-wrap: wrap; justify-content: flex-end; }
-  .stat b { display: block; font-family: var(--display); font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
-  .stat span { font-size: 13px; color: var(--ink-soft); }
-
-  /* Layout */
-  .grid { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px; align-items: start; }
+  /* Common blocks */
   .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
-  .panel + .panel { margin-top: 0; }
-  .col { display: grid; gap: 20px; }
+  .pad { padding: 18px; }
+  .panel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; padding: 16px 18px 8px; }
+  .panel-head h2 { font-size: 19px; }
+  .pill { display: inline-block; font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 999px; white-space: nowrap; }
+  .pill.good { background: var(--good-soft); color: var(--good); }
+  .pill.warn { background: var(--warn-soft); color: var(--warn); }
+  .pill.bad { background: var(--bad-soft); color: var(--bad); }
+  .pill.info { background: var(--water-soft); color: var(--water); }
+  .pill.muted { background: var(--surface-2); color: var(--ink-soft); border: 1px solid var(--line); }
+  .btn { border: 1px solid var(--line); background: var(--surface); border-radius: 9px; padding: 7px 13px; font-weight: 700; font-size: 13.5px; }
+  .btn.primary { background: var(--water); border-color: var(--water); color: #fff; }
+  .btn.danger { color: var(--bad); }
+  .btn.yellow { background: var(--yellow); border-color: var(--yellow); color: var(--yellow-ink); }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+  .kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; display: grid; gap: 2px; }
+  .kpi b { font-family: var(--display); font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.15; }
+  .kpi span { font-size: 13px; color: var(--ink-soft); }
+  .kpi em { font-style: normal; font-size: 12.5px; font-weight: 700; }
+  .kpi em.up { color: var(--good); } .kpi em.down { color: var(--bad); }
+  .table-wrap { overflow-x: auto; padding: 0 8px 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; font-size: 11.5px; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-soft); font-weight: 700; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  tr:last-child td { border-bottom: 0; }
+  td.r, th.r { text-align: right; font-variant-numeric: tabular-nums; }
+  .plate { font-family: var(--mono); font-size: 11.5px; font-weight: 600; color: var(--ink); border: 1.5px solid var(--ink); border-radius: 4px; padding: 0 5px; background: var(--surface); white-space: nowrap; }
+  .two { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+  .view-head { display: flex; justify-content: space-between; align-items: end; gap: 12px 20px; flex-wrap: wrap; padding-block: 8px 20px; }
+  .view-head h1 { font-size: clamp(26px, 3.6vw, 36px); line-height: 1.1; letter-spacing: -.02em; font-weight: 800; }
+  .view-head p { color: var(--ink-soft); margin-top: 6px; max-width: 62ch; }
 
-  /* Order builder */
+  /* Customer */
+  .intro h1 { font-size: clamp(30px, 4.6vw, 46px); line-height: 1.05; letter-spacing: -.02em; font-weight: 800; }
+  .intro h1 em { font-style: normal; color: var(--water); }
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px; align-items: start; }
   .builder { padding: 18px; display: grid; gap: 16px; }
   .row { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 14px; }
-  .field { display: grid; gap: 6px; }
-  .field input, .field select {
-    background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px;
-    padding: 10px 12px; width: 100%;
-  }
+  .field { display: grid; gap: 6px; align-content: start; }
+  .field input, .field select { background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; width: 100%; }
   .seg { display: flex; flex-wrap: wrap; gap: 6px; }
-  .seg button {
-    background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px;
-    padding: 7px 13px; font-size: 14px; font-weight: 600;
-  }
+  .seg button { background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px; padding: 7px 13px; font-size: 14px; font-weight: 600; }
   .seg button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--surface); }
   .filters { display: flex; flex-wrap: wrap; gap: 18px 28px; }
-
-  /* Map */
   .map { position: relative; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); background: var(--map-bg); }
   .map svg { display: block; width: 100%; height: auto; }
-  .map .legend {
-    position: absolute; left: 12px; bottom: 12px; background: var(--surface); border: 1px solid var(--line);
-    border-radius: 10px; padding: 6px 10px; font-size: 12.5px; display: flex; gap: 12px; flex-wrap: wrap;
-  }
+  .legend { position: absolute; left: 12px; bottom: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 6px 10px; font-size: 12.5px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .gps-badge { position: absolute; right: 12px; top: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 6px 10px; font-size: 12.5px; font-weight: 600; display: flex; align-items: center; gap: 7px; }
+  .pulse { width: 9px; height: 9px; border-radius: 50%; background: var(--good); box-shadow: 0 0 0 0 var(--good); animation: pulse 1.6s infinite; }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(31, 138, 85, .5); } 100% { box-shadow: 0 0 0 10px rgba(31, 138, 85, 0); } }
   .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
-
-  /* Tanker list */
-  .list-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 16px 18px 6px; flex-wrap: wrap; }
-  .list-head h2 { font-size: 20px; }
-  .list-head .sort { font-size: 13.5px; color: var(--ink-soft); }
   .tankers { list-style: none; margin: 0; padding: 6px 10px 12px; display: grid; gap: 4px; }
-  .tanker {
-    display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: 14px; align-items: center;
-    padding: 12px 10px; border-radius: 12px; border: 1px solid transparent;
-  }
+  .tanker { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 12px 10px; border-radius: 12px; border: 1px solid transparent; }
   .tanker:hover { background: var(--surface-2); }
   .tanker.selected { background: var(--water-soft); border-color: var(--water); }
-  .cap {
-    width: 56px; height: 56px; border-radius: 12px; background: var(--yellow); color: var(--yellow-ink);
-    display: grid; place-content: center; text-align: center; line-height: 1;
-  }
+  .cap { width: 56px; height: 56px; border-radius: 12px; background: var(--yellow); color: var(--yellow-ink); display: grid; place-content: center; text-align: center; line-height: 1; }
   .cap b { font-family: var(--display); font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums; }
   .cap small { font-size: 10px; font-weight: 700; letter-spacing: .06em; margin-top: 3px; }
-  .t-name { font-weight: 700; font-size: 15.5px; }
-  .t-meta { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 13px; color: var(--ink-soft); margin-top: 2px; }
-  .plate {
-    font-family: var(--mono); font-size: 11.5px; font-weight: 600; color: var(--ink);
-    border: 1.5px solid var(--ink); border-radius: 4px; padding: 0 5px; background: var(--surface);
-  }
-  .chip { display: inline-block; font-size: 11.5px; font-weight: 700; padding: 1px 8px; border-radius: 999px; }
-  .chip.treated { background: var(--water-soft); color: var(--water); }
-  .chip.bore { background: var(--warn-soft); color: var(--warn); }
+  .t-name { font-weight: 700; font-size: 15.5px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .t-meta { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 13px; color: var(--ink-soft); margin-top: 2px; align-items: center; }
   .t-right { text-align: right; display: grid; gap: 6px; justify-items: end; }
   .price { font-family: var(--display); font-weight: 700; font-size: 19px; font-variant-numeric: tabular-nums; }
   .eta { font-size: 13px; font-weight: 700; color: var(--good); }
-  .pick {
-    background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 5px 12px;
-    font-size: 13.5px; font-weight: 700;
-  }
   .tanker.selected .pick { background: var(--water); border-color: var(--water); color: #fff; }
   .empty { padding: 20px 18px; color: var(--ink-soft); }
-
-  /* Summary */
   .summary { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); padding: 18px; display: grid; gap: 14px; box-shadow: var(--shadow); }
   .summary h2 { font-size: 20px; }
   .sel-card { background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: grid; gap: 4px; }
@@ -196,24 +152,16 @@
   .lines div { display: flex; justify-content: space-between; gap: 12px; }
   .lines .total { border-top: 1px dashed var(--line); padding-top: 8px; font-weight: 700; font-size: 16px; }
   .note { font-size: 12.5px; color: var(--ink-soft); }
-  .cta {
-    background: var(--yellow); color: var(--yellow-ink); border: 0; border-radius: 12px; padding: 14px 16px;
-    font-weight: 800; font-size: 16px; font-family: var(--display); letter-spacing: .01em;
-  }
+  .cta { background: var(--yellow); color: var(--yellow-ink); border: 0; border-radius: 12px; padding: 14px 16px; font-weight: 800; font-size: 16px; font-family: var(--display); }
   .cta:hover { filter: brightness(1.05); }
-  .cta:disabled { opacity: .5; cursor: not-allowed; }
-  .ghost { background: transparent; border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; font-weight: 600; }
-
-  /* Tracking */
-  .track { display: grid; gap: 14px; }
+  .opt { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+  .opt input { width: 18px; height: 18px; accent-color: var(--water); }
   .otp { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--good-soft); border-radius: 12px; padding: 12px 14px; }
   .otp b { font-family: var(--mono); font-size: 24px; letter-spacing: .18em; color: var(--good); }
-  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
-  .steps li { display: grid; grid-template-columns: 22px 1fr; gap: 10px; position: relative; padding-bottom: 14px; font-size: 14px; }
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; }
+  .steps li { display: grid; grid-template-columns: 22px 1fr; gap: 10px; position: relative; padding-bottom: 12px; font-size: 14px; }
   .steps li:last-child { padding-bottom: 0; }
-  .steps li::before {
-    content: ""; position: absolute; left: 10px; top: 20px; bottom: 0; width: 2px; background: var(--line);
-  }
+  .steps li::before { content: ""; position: absolute; left: 10px; top: 20px; bottom: 0; width: 2px; background: var(--line); }
   .steps li:last-child::before { display: none; }
   .steps .mark { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--line); background: var(--surface); display: grid; place-content: center; position: relative; z-index: 1; }
   .steps li.done .mark { background: var(--good); border-color: var(--good); }
@@ -222,42 +170,67 @@
   .steps li.now .mark::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--water); }
   .steps small { display: block; color: var(--ink-soft); font-size: 12.5px; }
   .steps li:not(.done):not(.now) { color: var(--ink-soft); }
+  .driver { display: grid; grid-template-columns: 42px 1fr; gap: 10px; align-items: center; }
+  .avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--water-soft); color: var(--water); display: grid; place-content: center; font-weight: 800; font-family: var(--display); }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .proof { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .proof div { background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; display: grid; }
+  .proof b { font-variant-numeric: tabular-nums; }
+  .stars { display: flex; gap: 4px; }
+  .stars button { background: none; border: 0; font-size: 24px; color: var(--line); padding: 0 2px; line-height: 1; }
+  .stars button.on { color: var(--yellow); }
+  .trust { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; padding: 18px; }
+  .trust h3 { font-size: 15px; margin-bottom: 3px; }
+  .trust p { color: var(--ink-soft); font-size: 13.5px; }
+  .trust .ic { width: 30px; height: 30px; border-radius: 8px; background: var(--water-soft); color: var(--water); display: grid; place-content: center; margin-bottom: 8px; }
 
-  /* How it works + owners */
-  .how { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; padding: 18px; }
-  .how h3 { font-size: 16px; margin-bottom: 4px; }
-  .how p { margin: 0; color: var(--ink-soft); font-size: 14px; }
-  .how .n { font-family: var(--mono); font-size: 12px; color: var(--water); font-weight: 600; }
-  .owners {
-    display: grid; grid-template-columns: 1.3fr 1fr; gap: 20px; align-items: center; padding: 20px;
-    background: var(--ink); color: var(--surface); border-radius: 14px;
-  }
-  .owners h2 { font-size: 24px; }
-  .owners p { margin: 6px 0 0; opacity: .8; }
-  .owners ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; font-size: 14px; }
-  .owners li::before { content: "✓"; color: var(--yellow); font-weight: 800; margin-right: 8px; }
+  /* Owner */
+  .request { border: 2px solid var(--yellow); border-radius: 14px; background: var(--surface); padding: 16px 18px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; align-items: center; }
+  .request h3 { font-size: 18px; }
+  .timer { font-family: var(--mono); font-weight: 600; font-size: 13px; color: var(--warn); }
+  .toggle { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 6px 8px 6px 14px; }
+  .switch { width: 42px; height: 24px; border-radius: 999px; background: var(--line); border: 0; position: relative; padding: 0; }
+  .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: left .15s; }
+  .switch[aria-checked="true"] { background: var(--good); }
+  .switch[aria-checked="true"]::after { left: 21px; }
+  .price-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; padding: 4px 18px 18px; }
+  .price-grid label { display: grid; gap: 4px; font-size: 13px; font-weight: 600; }
+  .price-grid input { background: var(--surface-2); border: 1px solid var(--line); border-radius: 9px; padding: 8px 10px; width: 100%; font-variant-numeric: tabular-nums; }
+  .price-grid input.over { border-color: var(--bad); }
+
+  /* Admin */
+  .alerts { list-style: none; margin: 0; padding: 4px 12px 12px; display: grid; gap: 8px; }
+  .alert { display: grid; grid-template-columns: 4px minmax(0, 1fr) auto; gap: 12px; align-items: center; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px 10px 0; overflow: hidden; }
+  .alert .stripe { align-self: stretch; }
+  .alert.crit .stripe { background: var(--bad); } .alert.warn .stripe { background: var(--warn); } .alert.info .stripe { background: var(--water); }
+  .alert strong { display: block; font-size: 14px; }
+  .alert span { font-size: 12.5px; color: var(--ink-soft); }
+  .alert.acked { opacity: .5; }
+  .docs { display: flex; gap: 4px; flex-wrap: wrap; }
+  .confirm { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 13px; }
+  .sec-list { list-style: none; margin: 0; padding: 4px 18px 16px; display: grid; gap: 10px; }
+  .sec-list li { display: flex; justify-content: space-between; gap: 12px; align-items: center; font-size: 14px; }
+  .log { list-style: none; margin: 0; padding: 4px 18px 16px; display: grid; gap: 8px; font-size: 13.5px; }
+  .log li { display: grid; grid-template-columns: 52px 1fr; gap: 10px; }
+  .log time { font-family: var(--mono); font-size: 12px; color: var(--ink-soft); padding-top: 2px; }
+
   .demo-flag { font-size: 12px; color: var(--ink-soft); text-align: center; margin-top: 18px; }
-
-  .toast {
-    position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 18px); transform: translateX(-50%);
-    background: var(--ink); color: var(--surface); padding: 10px 16px; border-radius: 10px; font-weight: 600; font-size: 14px;
-    box-shadow: var(--shadow); max-width: calc(100vw - 32px);
-  }
+  .toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 18px); transform: translateX(-50%); background: var(--ink); color: var(--surface); padding: 10px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; box-shadow: var(--shadow); max-width: calc(100vw - 32px); z-index: 10; }
 
   @media (max-width: 900px) {
-    .grid { grid-template-columns: minmax(0, 1fr); }
+    .grid, .two { grid-template-columns: minmax(0, 1fr); }
     .summary { position: static; }
-    .intro { grid-template-columns: 1fr; }
-    .stats { justify-content: flex-start; }
-    .how { grid-template-columns: 1fr; }
-    .owners { grid-template-columns: 1fr; }
+    .trust { grid-template-columns: 1fr 1fr; }
   }
   @media (max-width: 620px) {
     .row { grid-template-columns: 1fr; }
     .tanker { grid-template-columns: 48px minmax(0, 1fr); }
     .cap { width: 48px; height: 48px; }
     .t-right { grid-column: 2; display: flex; justify-content: space-between; align-items: center; text-align: left; flex-wrap: wrap; }
-    .top nav a:not(.owner) { display: none; }
+    .trust { grid-template-columns: 1fr; }
+    .request { grid-template-columns: 1fr; }
+    .roles { width: 100%; }
+    .roles button { flex: 1; padding-inline: 8px; }
   }
   @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; animation: none !important; }
@@ -271,155 +244,295 @@
         <path d="M15 3 C15 3 6 13.5 6 19 a9 9 0 0 0 18 0 C24 13.5 15 3 15 3 Z" fill="var(--water)"/>
         <path d="M10.5 19.5 a4.5 4.5 0 0 0 4.5 4.5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
       </svg>
-      NeerNow
+      <span>NeerNow <small>Coimbatore</small></span>
     </div>
-    <nav aria-label="Main">
-      <a href="#order">Order water</a>
-      <a href="#how">How it works</a>
-      <a href="#owners" class="owner">Own a tanker? Join</a>
-    </nav>
+    <div class="roles" role="tablist" aria-label="Portal">
+      <button role="tab" id="tab-customer" data-view="customer" aria-selected="true" aria-controls="view-customer">Customer</button>
+      <button role="tab" id="tab-owner" data-view="owner" aria-selected="false" aria-controls="view-owner">Tanker owner</button>
+      <button role="tab" id="tab-admin" data-view="admin" aria-selected="false" aria-controls="view-admin">Admin</button>
+    </div>
+    <div class="session" id="session"></div>
   </header>
 
-  <section class="intro">
-    <div>
-      <h1>Water at your gate <em>within the hour.</em></h1>
-      <p>Now serving Coimbatore: Saravanampatti, Peelamedu, Gandhipuram, RS Puram, Vadavalli, Singanallur and Kuniyamuthur. Compare verified tanker owners near you by capacity, water source, arrival time and price. Book in a minute, pay by UPI or cash, and track the lorry until it reaches your sump.</p>
+  <!-- ============ CUSTOMER ============ -->
+  <section id="view-customer" role="tabpanel" aria-labelledby="tab-customer" class="stack">
+    <div class="intro view-head">
+      <div>
+        <h1>Water at your gate <em>within the hour.</em></h1>
+        <p>Serving Saravanampatti, Peelamedu, Gandhipuram, RS Puram, Vadavalli, Singanallur and Kuniyamuthur. Compare verified tanker owners, book in a minute, and follow the lorry live on the map.</p>
+      </div>
     </div>
-    <div class="stats" aria-label="Network today (sample figures)">
-      <div class="stat"><b id="stat-online">46</b><span>tankers online nearby</span></div>
-      <div class="stat"><b>32 min</b><span>average arrival</span></div>
-      <div class="stat"><b>4.7★</b><span>owner rating</span></div>
-    </div>
-  </section>
 
-  <div class="grid" id="order">
-    <div class="col">
-      <form class="panel builder" id="builder" autocomplete="off">
-        <div class="row">
-          <div class="field">
-            <label class="label" for="addr">Delivery address</label>
-            <input id="addr" value="22, Kurinji Nagar, Sathy Road, Saravanampatti, Coimbatore 641035">
-          </div>
-          <div class="field">
-            <label class="label" for="when">When</label>
-            <select id="when">
-              <option value="now">As soon as possible</option>
-              <option value="eve">Today, 5–7 PM</option>
-              <option value="morn">Tomorrow, 6–8 AM</option>
-            </select>
-          </div>
-          <div class="field">
-            <label class="label" for="pay">Payment</label>
-            <select id="pay">
-              <option value="upi">UPI on booking</option>
-              <option value="cod">Cash on delivery</option>
-            </select>
-          </div>
-        </div>
-        <div class="filters">
-          <div class="field">
-            <span class="label" id="lbl-src">Water source</span>
-            <div class="seg" role="group" aria-labelledby="lbl-src" data-filter="src">
-              <button type="button" data-v="all" aria-pressed="true">All</button>
-              <button type="button" data-v="treated" aria-pressed="false">Treated / RO</button>
-              <button type="button" data-v="bore" aria-pressed="false">Borewell</button>
+    <div class="grid">
+      <div class="stack">
+        <form class="panel builder" id="builder" autocomplete="off">
+          <div class="row">
+            <div class="field">
+              <label class="label" for="addr">Delivery address</label>
+              <select id="addr">
+                <option>Home · 22, Kurinji Nagar, Sathy Road, Saravanampatti 641035</option>
+                <option>Site · Plot 7, Keeranatham IT Park Rd, Coimbatore 641035</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="label" for="when">When</label>
+              <select id="when">
+                <option value="now">As soon as possible</option>
+                <option value="eve">Today, 5–7 PM</option>
+                <option value="morn">Tomorrow, 6–8 AM</option>
+                <option value="weekly">Every Monday, 7 AM (subscription)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="label" for="pay">Payment</label>
+              <select id="pay">
+                <option value="upi">UPI, held until delivery</option>
+                <option value="cod">Cash on delivery</option>
+                <option value="wallet">Society wallet</option>
+              </select>
             </div>
           </div>
-          <div class="field">
-            <span class="label" id="lbl-cap">Capacity</span>
-            <div class="seg" role="group" aria-labelledby="lbl-cap" data-filter="cap">
-              <button type="button" data-v="all" aria-pressed="true">Any</button>
-              <button type="button" data-v="small" aria-pressed="false">Up to 6 KL</button>
-              <button type="button" data-v="mid" aria-pressed="false">9–12 KL</button>
-              <button type="button" data-v="large" aria-pressed="false">24 KL</button>
+          <div class="filters">
+            <div class="field">
+              <span class="label" id="lbl-src">Water source</span>
+              <div class="seg" role="group" aria-labelledby="lbl-src" data-filter="src">
+                <button type="button" data-v="all" aria-pressed="true">All</button>
+                <button type="button" data-v="treated" aria-pressed="false">Treated / RO</button>
+                <button type="button" data-v="bore" aria-pressed="false">Borewell</button>
+              </div>
+            </div>
+            <div class="field">
+              <span class="label" id="lbl-cap">Capacity</span>
+              <div class="seg" role="group" aria-labelledby="lbl-cap" data-filter="cap">
+                <button type="button" data-v="all" aria-pressed="true">Any</button>
+                <button type="button" data-v="small" aria-pressed="false">Up to 6 KL</button>
+                <button type="button" data-v="mid" aria-pressed="false">9–12 KL</button>
+                <button type="button" data-v="large" aria-pressed="false">24 KL</button>
+              </div>
             </div>
           </div>
-        </div>
-      </form>
+        </form>
 
-      <div class="map" aria-label="Map of tankers near your address">
-        <svg id="map" viewBox="0 0 800 300" role="img" aria-labelledby="map-title">
-          <title id="map-title">Tankers around Saravanampatti</title>
-          <rect width="800" height="300" fill="var(--map-bg)"/>
-          <g fill="var(--map-block)">
-            <rect x="20" y="20" width="150" height="80" rx="6"/><rect x="200" y="20" width="170" height="80" rx="6"/>
-            <rect x="400" y="20" width="120" height="80" rx="6"/><rect x="550" y="20" width="230" height="80" rx="6"/>
-            <rect x="20" y="130" width="150" height="70" rx="6"/><rect x="200" y="130" width="170" height="70" rx="6"/>
-            <rect x="400" y="130" width="120" height="70" rx="6"/><rect x="550" y="130" width="230" height="70" rx="6"/>
-            <rect x="20" y="230" width="150" height="55" rx="6"/><rect x="200" y="230" width="170" height="55" rx="6"/>
-            <rect x="400" y="230" width="120" height="55" rx="6"/><rect x="550" y="230" width="230" height="55" rx="6"/>
-          </g>
-          <g stroke="var(--map-road)" stroke-width="14" fill="none">
-            <path d="M0 115 H800"/><path d="M0 215 H800"/><path d="M185 0 V300"/><path d="M385 0 V300"/><path d="M535 0 V300"/>
-          </g>
-                    <text x="600" y="111" font-size="11" font-weight="600" fill="var(--ink-soft)" font-family="Figtree, sans-serif">SATHY ROAD</text>
-          <path id="route" d="" stroke="var(--water)" stroke-width="4" stroke-dasharray="8 6" fill="none"/>
-          <g id="markers"></g>
-          <g id="home" transform="translate(460 165)">
-            <circle r="20" fill="var(--water)" fill-opacity=".18"/>
-            <circle r="9" fill="var(--water)" stroke="var(--surface)" stroke-width="3"/>
-          </g>
-        </svg>
-        <div class="legend">
-          <span><i class="dot" style="background:var(--water)"></i>Your address</span>
-          <span><i class="dot" style="background:var(--yellow)"></i>Available tanker</span>
-          <span><i class="dot" style="background:var(--ink)"></i>Selected</span>
+        <div class="map">
+          <svg id="map" viewBox="0 0 800 300" role="img" aria-label="Map of tankers around Saravanampatti"></svg>
+          <div class="gps-badge" id="gps-badge"><span class="pulse"></span><span id="gps-text">46 tankers live on GPS</span></div>
+          <div class="legend">
+            <span><i class="dot" style="background:var(--water)"></i>Your address</span>
+            <span><i class="dot" style="background:var(--yellow)"></i>Available</span>
+            <span><i class="dot" style="background:var(--ink)"></i>Selected / on the way</span>
+          </div>
         </div>
+
+        <section class="panel" aria-labelledby="list-title">
+          <div class="panel-head">
+            <h2 id="list-title">Tankers near you</h2>
+            <span class="soft" style="font-size:13.5px" id="count"></span>
+          </div>
+          <ul class="tankers" id="list"></ul>
+        </section>
       </div>
 
-      <section class="panel" aria-labelledby="list-title">
-        <div class="list-head">
-          <h2 id="list-title">Tankers near you</h2>
-          <span class="sort" id="count">Sorted by arrival time</span>
+      <aside class="panel summary" id="summary" aria-live="polite"></aside>
+    </div>
+
+    <section class="panel trust" aria-label="Safety features">
+      <div><div class="ic"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 1 2 3.5v4C2 11 4.6 14 8 15c3.4-1 6-4 6-7.5v-4Z" fill="currentColor"/></svg></div><h3>Verified owners</h3><p>RC book, licence, insurance and a water test report are checked before a lorry goes live.</p></div>
+      <div><div class="ic"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="7" r="3" fill="currentColor"/><path d="M8 15s5-4.5 5-8A5 5 0 0 0 3 7c0 3.5 5 8 5 8Z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></div><h3>Live GPS tracking</h3><p>Every trip is tracked from the filling point to your gate. Route changes and stops are flagged.</p></div>
+      <div><div class="ic"><svg width="16" height="16" viewBox="0 0 16 16"><rect x="3" y="7" width="10" height="8" rx="2" fill="currentColor"/><path d="M5 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></div><h3>OTP and sealed valve</h3><p>The valve seal number is logged at filling. Water is released only after you share the OTP.</p></div>
+      <div><div class="ic"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M2 12h12M4 12V7m4 5V4m4 8V8" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg></div><h3>Pay for what arrives</h3><p>The flow meter reading and a delivery photo come with every bill. UPI is released only after delivery.</p></div>
+    </section>
+  </section>
+
+  <!-- ============ OWNER ============ -->
+  <section id="view-owner" role="tabpanel" aria-labelledby="tab-owner" class="stack" hidden>
+    <div class="view-head">
+      <div>
+        <span class="label">Owner ID <span class="mono">KWS-0142</span> · <span class="pill good">KYC verified</span></span>
+        <h1>Kongu Water Supply</h1>
+        <p>4 lorries in the Saravanampatti – Kalapatti zone. Orders are routed to your nearest free lorry.</p>
+      </div>
+      <div class="toggle">Accepting orders <button type="button" class="switch" id="online" role="switch" aria-checked="true" aria-label="Accepting orders"></button></div>
+    </div>
+
+    <div class="kpis" id="owner-kpis"></div>
+
+    <div id="request-slot"></div>
+
+    <div class="two">
+      <section class="panel" aria-labelledby="fleet-title">
+        <div class="panel-head"><h2 id="fleet-title">Fleet and GPS</h2><span class="soft" style="font-size:13px">GPS pings every 10 s during a trip</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Lorry</th><th>Driver</th><th>Status</th><th>GPS</th><th>Documents</th></tr></thead>
+            <tbody id="fleet"></tbody>
+          </table>
         </div>
-        <ul class="tankers" id="list"></ul>
+      </section>
+      <section class="panel" aria-labelledby="pay-title">
+        <div class="panel-head"><h2 id="pay-title">Payouts</h2><span class="pill info">Every Monday by UPI</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Week</th><th class="r">Trips</th><th class="r">Net</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>22–28 Sep</td><td class="r">41</td><td class="r">₹46,180</td><td><span class="pill warn">Due Mon</span></td></tr>
+              <tr><td>15–21 Sep</td><td class="r">38</td><td class="r">₹42,730</td><td><span class="pill good">Paid</span></td></tr>
+              <tr><td>8–14 Sep</td><td class="r">44</td><td class="r">₹49,900</td><td><span class="pill good">Paid</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note" style="padding:0 18px 16px">Net = trip price minus 8% platform commission. GST invoices are generated automatically.</p>
       </section>
     </div>
 
-    <aside class="panel summary" id="summary" aria-live="polite"></aside>
-  </div>
-
-  <section id="how" class="panel how" style="margin-top:20px" aria-label="How it works">
-    <div><span class="n">Step 1</span><h3>Choose a tanker</h3><p>See live owners near you with lorry number, capacity in litres, water source and fixed price before you book.</p></div>
-    <div><span class="n">Step 2</span><h3>Owner accepts in minutes</h3><p>The nearest owner confirms, fills at a licensed source and starts the trip. You see the driver and ETA.</p></div>
-    <div><span class="n">Step 3</span><h3>Share OTP at delivery</h3><p>Water is released into your sump only after you share the 4-digit OTP, so you pay for exactly what arrives.</p></div>
+    <section class="panel" aria-labelledby="price-title">
+      <div class="panel-head"><h2 id="price-title">Your price card</h2><span class="soft" style="font-size:13px">Zone cap set by NeerNow keeps prices fair in summer</span></div>
+      <div class="price-grid" id="price-grid"></div>
+      <div style="padding:0 18px 18px" class="actions"><button type="button" class="btn primary" id="save-prices">Save prices</button><span class="note" id="price-note"></span></div>
+    </section>
   </section>
 
-  <section id="owners" class="owners" style="margin-top:20px">
-    <div>
-      <h2>Own a water tanker?</h2>
-      <p>List your lorries, set your per-trip price by capacity, and receive bookings from homes, apartments and construction sites in your area.</p>
+  <!-- ============ ADMIN ============ -->
+  <section id="view-admin" role="tabpanel" aria-labelledby="tab-admin" class="stack" hidden>
+    <div class="view-head">
+      <div>
+        <span class="label">Operations control · Coimbatore</span>
+        <h1>Live operations</h1>
+        <p>Watch every trip, verify new owners, and act on safety and fraud alerts.</p>
+      </div>
     </div>
-    <ul>
-      <li>Orders routed to the nearest free lorry</li>
-      <li>Weekly UPI settlement, no paperwork</li>
-      <li>Driver app with navigation and OTP check</li>
-    </ul>
+
+    <div class="kpis">
+      <div class="kpi"><span>Live orders</span><b>38</b><em class="up">+6 vs last Sat</em></div>
+      <div class="kpi"><span>Tankers online</span><b>46 / 71</b><em class="up">65% of fleet</em></div>
+      <div class="kpi"><span>Orders value today</span><b>₹2.94 L</b><em class="up">+12%</em></div>
+      <div class="kpi"><span>Average arrival</span><b>32 min</b><em class="down">+4 min</em></div>
+      <div class="kpi"><span>Open complaints</span><b id="k-complaints">3</b><em class="down">1 over 24 h</em></div>
+    </div>
+
+    <div class="two">
+      <div class="map">
+        <svg id="admin-map" viewBox="0 0 800 300" role="img" aria-label="Live map of all tankers"></svg>
+        <div class="legend">
+          <span><i class="dot" style="background:var(--good)"></i>On trip</span>
+          <span><i class="dot" style="background:var(--yellow)"></i>Available</span>
+          <span><i class="dot" style="background:var(--bad)"></i>Alert</span>
+        </div>
+      </div>
+      <section class="panel" aria-labelledby="alerts-title">
+        <div class="panel-head"><h2 id="alerts-title">Safety and fraud alerts</h2><span class="soft" style="font-size:13px" id="alert-count"></span></div>
+        <ul class="alerts" id="alerts"></ul>
+      </section>
+    </div>
+
+    <section class="panel" aria-labelledby="kyc-title">
+      <div class="panel-head"><h2 id="kyc-title">Owner verification queue</h2><span class="soft" style="font-size:13px">Lorries go live only after all checks pass</span></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Owner</th><th>Lorry</th><th>Documents</th><th>Applied</th><th>Decision</th></tr></thead>
+          <tbody id="kyc"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="two">
+      <section class="panel" aria-labelledby="cmp-title">
+        <div class="panel-head"><h2 id="cmp-title">Complaints</h2></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Order</th><th>Issue</th><th>Age</th><th></th></tr></thead>
+            <tbody id="complaints"></tbody>
+          </table>
+        </div>
+      </section>
+      <div class="stack">
+        <section class="panel" aria-labelledby="sec-title">
+          <div class="panel-head"><h2 id="sec-title">Security status</h2></div>
+          <ul class="sec-list">
+            <li><span>Two-factor login for admins</span><span class="pill good">4 of 4</span></li>
+            <li><span>Role-based access</span><span class="pill good">3 roles</span></li>
+            <li><span>Customer phone numbers masked</span><span class="pill good">On</span></li>
+            <li><span>Login rate limit and bot check</span><span class="pill good">On</span></li>
+            <li><span>New-device admin login</span><span class="pill warn">1 to review</span></li>
+            <li><span>Daily encrypted backup</span><span class="pill good">02:00 today</span></li>
+          </ul>
+        </section>
+        <section class="panel" aria-labelledby="log-title">
+          <div class="panel-head"><h2 id="log-title">Audit log</h2></div>
+          <ul class="log" id="log">
+            <li><time>10:42</time><span>Priya (Ops) raised zone cap for 24 KL in North-East to ₹2,800</span></li>
+            <li><time>10:15</time><span>Arun (Support) refunded ₹120 on order NN-48177</span></li>
+            <li><time>09:58</time><span>System suspended TN 38 AB 7710: insurance expired</span></li>
+          </ul>
+        </section>
+      </div>
+    </div>
   </section>
 
-  <p class="demo-flag">Prototype with sample tankers, owners and prices. No real orders are placed.</p>
+  <p class="demo-flag">Prototype with sample owners, lorries, orders and prices. No real orders, payments or GPS data.</p>
 </div>
 
 <div class="toast" id="toast" hidden></div>
 
 <script>
 (function () {
-  var HOME = { x: 460, y: 165 };
-  var TANKERS = [
-    { id: 1, owner: "Kongu Water Supply", plate: "TN 66 BK 4417", kl: 12, src: "treated", eta: 22, km: 3.1, rating: 4.8, trips: 1240, price: 1450, x: 300, y: 115 },
-    { id: 2, owner: "Sri Balaji Tankers", plate: "TN 38 CX 2081", kl: 6, src: "bore", eta: 15, km: 1.8, rating: 4.6, trips: 860, price: 750, x: 535, y: 60 },
-    { id: 3, owner: "Maruthamalai Aqua Movers", plate: "TN 37 AZ 9930", kl: 9, src: "treated", eta: 38, km: 5.6, rating: 4.9, trips: 2010, price: 1150, x: 90, y: 215 },
-    { id: 4, owner: "Lakshmi Transport", plate: "TN 38 H 6602", kl: 24, src: "bore", eta: 50, km: 7.4, rating: 4.5, trips: 540, price: 2600, x: 720, y: 115 },
-    { id: 5, owner: "Kovai Mini Tank", plate: "TN 66 DE 1175", kl: 3, src: "treated", eta: 12, km: 1.2, rating: 4.7, trips: 3120, price: 480, x: 385, y: 250 },
-    { id: 6, owner: "Perur Water Carriers", plate: "TN 99 R 3308", kl: 12, src: "bore", eta: 30, km: 4.3, rating: 4.4, trips: 690, price: 1250, x: 185, y: 40 }
-  ];
-  var PLATFORM_FEE = 29;
-  var state = { src: "all", cap: "all", selected: 1, order: null };
-
   var $ = function (id) { return document.getElementById(id); };
-  var rupee = function (n) { return "₹" + n.toLocaleString("en-IN"); };
+  var rupee = function (n) { return "₹" + Math.round(n).toLocaleString("en-IN"); };
   var litres = function (kl) { return (kl * 1000).toLocaleString("en-IN") + " L"; };
   var srcLabel = function (s) { return s === "treated" ? "Treated / RO" : "Borewell"; };
+  var nowTime = function () { var d = new Date(); return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); };
+
+  function toast(msg) {
+    var t = $("toast"); t.textContent = msg; t.hidden = false;
+    clearTimeout(toast._t); toast._t = setTimeout(function () { t.hidden = true; }, 2800);
+  }
+
+  /* ---------- Shared map base ---------- */
+  function baseMap() {
+    var blocks = [[20,20,150,80],[200,20,170,80],[400,20,120,80],[550,20,230,80],[20,130,150,70],[200,130,170,70],[400,130,120,70],[550,130,230,70],[20,230,150,55],[200,230,170,55],[400,230,120,55],[550,230,230,55]];
+    return '<rect width="800" height="300" fill="var(--map-bg)"/><g fill="var(--map-block)">' +
+      blocks.map(function (b) { return '<rect x="' + b[0] + '" y="' + b[1] + '" width="' + b[2] + '" height="' + b[3] + '" rx="6"/>'; }).join("") +
+      '</g><g stroke="var(--map-road)" stroke-width="14" fill="none"><path d="M0 115 H800"/><path d="M0 215 H800"/><path d="M185 0 V300"/><path d="M385 0 V300"/><path d="M535 0 V300"/></g>' +
+      '<text x="600" y="111" font-size="11" font-weight="600" fill="var(--ink-soft)" font-family="Figtree, sans-serif">SATHY ROAD</text>' +
+      '<text x="600" y="211" font-size="11" font-weight="600" fill="var(--ink-soft)" font-family="Figtree, sans-serif">KALAPATTI ROAD</text>';
+  }
+  function marker(x, y, label, fill, txt, id) {
+    return '<g class="mk"' + (id ? ' data-id="' + id + '"' : "") + ' transform="translate(' + x + ' ' + y + ')" style="cursor:pointer">' +
+      '<rect x="-22" y="-13" width="44" height="26" rx="7" fill="' + fill + '" stroke="var(--surface)" stroke-width="2"/>' +
+      '<text y="4.5" text-anchor="middle" font-size="12" font-weight="700" font-family="Figtree, sans-serif" fill="' + txt + '">' + label + '</text></g>';
+  }
+
+  /* ---------- Role switch + session ---------- */
+  var SESSIONS = {
+    customer: '<span class="lock">OTP verified</span><span>Karthik S · <span class="mono">+91 98••• ••210</span></span>',
+    owner: '<span class="lock">OTP + PIN</span><span>Owner login · <span class="mono">+91 94••• ••318</span></span>',
+    admin: '<span class="lock">2FA</span><span>Priya M · Operations · session ends in 28 min</span>'
+  };
+  function showView(v) {
+    ["customer", "owner", "admin"].forEach(function (k) {
+      $("view-" + k).hidden = k !== v;
+      $("tab-" + k).setAttribute("aria-selected", k === v ? "true" : "false");
+    });
+    $("session").innerHTML = SESSIONS[v];
+    try { history.replaceState(null, "", "#" + v); } catch (e) {}
+  }
+  document.querySelector(".roles").addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-view]"); if (b) showView(b.dataset.view);
+  });
+
+  /* =========================================================
+     CUSTOMER
+     ========================================================= */
+  var HOME = { x: 460, y: 165 };
+  var TANKERS = [
+    { id: 1, owner: "Kongu Water Supply", plate: "TN 66 BK 4417", kl: 12, src: "treated", eta: 22, km: 3.1, rating: 4.8, trips: 1240, price: 1450, x: 300, y: 115, tds: 180, driver: "Selvam R." },
+    { id: 2, owner: "Sri Balaji Tankers", plate: "TN 38 CX 2081", kl: 6, src: "bore", eta: 15, km: 1.8, rating: 4.6, trips: 860, price: 750, x: 535, y: 60, tds: 640, driver: "Mani K." },
+    { id: 3, owner: "Maruthamalai Aqua Movers", plate: "TN 37 AZ 9930", kl: 9, src: "treated", eta: 38, km: 5.6, rating: 4.9, trips: 2010, price: 1150, x: 90, y: 215, tds: 150, driver: "Ravi P." },
+    { id: 4, owner: "Lakshmi Transport", plate: "TN 38 H 6602", kl: 24, src: "bore", eta: 50, km: 7.4, rating: 4.5, trips: 540, price: 2600, x: 720, y: 115, tds: 710, driver: "Suresh V." },
+    { id: 5, owner: "Kovai Mini Tank", plate: "TN 66 DE 1175", kl: 3, src: "treated", eta: 12, km: 1.2, rating: 4.7, trips: 3120, price: 480, x: 385, y: 250, tds: 120, driver: "Gopal A." },
+    { id: 6, owner: "Perur Water Carriers", plate: "TN 99 R 3308", kl: 12, src: "bore", eta: 30, km: 4.3, rating: 4.4, trips: 690, price: 1250, x: 185, y: 40, tds: 590, driver: "Babu N." }
+  ];
+  var PLATFORM_FEE = 29;
+  var state = { src: "all", cap: "all", selected: 1, order: null, rating: 0 };
 
   function capMatch(t) {
     if (state.cap === "small") return t.kl <= 6;
@@ -433,6 +546,11 @@
   }
   function selected() { return TANKERS.filter(function (t) { return t.id === state.selected; })[0] || null; }
   function distanceFee(t) { return Math.round(t.km * 12); }
+  function routePath(t) {
+    var midX = [185, 385, 535].reduce(function (a, b) { return Math.abs(b - t.x) < Math.abs(a - t.x) ? b : a; });
+    return "M" + t.x + " " + t.y + " H" + midX + " V" + (t.y < HOME.y ? 115 : 215) + " H" + HOME.x + " V" + HOME.y;
+  }
+  function tdsPill(t) { return t.tds <= 300 ? '<span class="pill good">TDS ' + t.tds + ' ppm</span>' : '<span class="pill warn">TDS ' + t.tds + ' ppm</span>'; }
 
   function renderList() {
     var rows = visible();
@@ -442,131 +560,322 @@
       var sel = t.id === state.selected;
       return '<li class="tanker' + (sel ? " selected" : "") + '">' +
         '<div class="cap"><b>' + t.kl + '</b><small>KL</small></div>' +
-        '<div><div class="t-name">' + t.owner + '</div>' +
-        '<div class="t-meta"><span class="plate">' + t.plate + '</span>' +
-        '<span class="chip ' + (t.src === "treated" ? "treated" : "bore") + '">' + srcLabel(t.src) + '</span>' +
-        '<span class="num">' + t.rating.toFixed(1) + '★ · ' + t.trips.toLocaleString("en-IN") + ' trips</span>' +
-        '<span class="num">' + t.km.toFixed(1) + ' km away</span></div></div>' +
-        '<div class="t-right"><span class="price">' + rupee(t.price) + '</span>' +
-        '<span class="eta num">' + t.eta + ' min</span>' +
-        '<button type="button" class="pick" data-id="' + t.id + '"' + (state.order ? " disabled" : "") + '>' + (sel ? "Selected" : "Choose") + '</button></div>' +
-        '</li>';
+        '<div><div class="t-name">' + t.owner + ' <span class="pill info">Verified</span></div>' +
+        '<div class="t-meta"><span class="plate">' + t.plate + '</span><span>' + srcLabel(t.src) + '</span>' + tdsPill(t) +
+        '<span class="num">' + t.rating.toFixed(1) + '★ · ' + t.trips.toLocaleString("en-IN") + ' trips · ' + t.km.toFixed(1) + ' km</span></div></div>' +
+        '<div class="t-right"><span class="price">' + rupee(t.price) + '</span><span class="eta num">' + t.eta + ' min</span>' +
+        '<button type="button" class="btn pick" data-id="' + t.id + '"' + (state.order ? " disabled" : "") + '>' + (sel ? "Selected" : "Choose") + '</button></div></li>';
     }).join("") : '<li class="empty">No tanker matches these filters right now. Try another capacity or water source.</li>';
   }
 
   function renderMap() {
-    var rows = visible();
-    $("markers").innerHTML = rows.map(function (t) {
-      var sel = t.id === state.selected;
-      var fill = sel ? "var(--ink)" : "var(--yellow)";
-      var txt = sel ? "var(--surface)" : "var(--yellow-ink)";
-      return '<g class="mk" data-id="' + t.id + '" transform="translate(' + t.x + ' ' + t.y + ')" style="cursor:pointer">' +
-        '<rect x="-22" y="-13" width="44" height="26" rx="7" fill="' + fill + '" stroke="var(--surface)" stroke-width="2"/>' +
-        '<text y="4.5" text-anchor="middle" font-size="12" font-weight="700" font-family="Figtree, sans-serif" fill="' + txt + '">' + t.kl + ' KL</text></g>';
+    var rows = visible(), s = selected(), o = state.order;
+    var markers = rows.filter(function (t) { return !(o && t.id === o.tanker.id); }).map(function (t) {
+      var sel = t.id === state.selected && !o;
+      return marker(t.x, t.y, t.kl + " KL", sel ? "var(--ink)" : "var(--yellow)", sel ? "var(--surface)" : "var(--yellow-ink)", t.id);
     }).join("");
-    var s = selected();
-    $("route").setAttribute("d", s && rows.indexOf(s) > -1 ? routePath(s) : "");
+    var route = s && (o || rows.indexOf(s) > -1) ? routePath(o ? o.tanker : s) : "";
+    $("map").innerHTML = baseMap() +
+      '<path id="route" d="' + route + '" stroke="var(--water)" stroke-width="4" stroke-dasharray="8 6" fill="none"/>' +
+      '<g opacity="' + (o ? ".35" : "1") + '">' + markers + '</g>' +
+      '<g transform="translate(' + HOME.x + ' ' + HOME.y + ')"><circle r="34" fill="none" stroke="var(--water)" stroke-dasharray="3 4" stroke-opacity=".6"/><circle r="20" fill="var(--water)" fill-opacity=".18"/><circle r="9" fill="var(--water)" stroke="var(--surface)" stroke-width="3"/></g>' +
+      (o ? '<g id="live"></g>' : "");
+    if (o) placeLive();
   }
-  function routePath(t) {
-    // L-shaped route along the road grid
-    var midX = [185, 385, 535].reduce(function (a, b) { return Math.abs(b - t.x) < Math.abs(a - t.x) ? b : a; });
-    return "M" + t.x + " " + t.y + " H" + midX + " V" + (t.y < HOME.y ? 115 : 215) + " H" + HOME.x + " V" + HOME.y;
+  function placeLive() {
+    var o = state.order, path = $("route"), live = $("live");
+    if (!o || !path || !live) return;
+    var len = path.getTotalLength(), pt = path.getPointAtLength(len * o.progress);
+    live.setAttribute("transform", "translate(" + pt.x + " " + pt.y + ")");
+    live.innerHTML = '<rect x="-24" y="-14" width="48" height="28" rx="8" fill="var(--ink)" stroke="var(--yellow)" stroke-width="2.5"/>' +
+      '<text y="4.5" text-anchor="middle" font-size="12" font-weight="700" font-family="Figtree, sans-serif" fill="var(--surface)">' + o.tanker.kl + ' KL</text>';
   }
 
   function renderSummary() {
     var el = $("summary");
     if (state.order) return renderTracking(el);
     var t = selected();
-    if (!t) { el.innerHTML = '<h2>Your order</h2><p class="note">Choose a tanker from the list to see the price breakdown.</p>'; return; }
+    if (!t) { el.innerHTML = '<h2>Your order</h2><p class="note">Choose a tanker from the list to see the price.</p>'; return; }
     var dist = distanceFee(t), total = t.price + dist + PLATFORM_FEE;
-    var whenTxt = $("when").options[$("when").selectedIndex].text;
     el.innerHTML =
       '<h2>Your order</h2>' +
-      '<div class="sel-card"><span class="label">Tanker</span>' +
-      '<strong>' + t.owner + '</strong>' +
-      '<span class="t-meta"><span class="plate">' + t.plate + '</span><span>' + litres(t.kl) + ' · ' + srcLabel(t.src) + '</span></span></div>' +
+      '<div class="sel-card"><span class="label">Tanker</span><strong>' + t.owner + '</strong>' +
+      '<span class="t-meta"><span class="plate">' + t.plate + '</span><span>' + litres(t.kl) + ' · ' + srcLabel(t.src) + '</span></span>' +
+      '<span class="t-meta">' + tdsPill(t) + '<span>Water test: 12 Sep 2026</span></span></div>' +
       '<div class="lines num">' +
       '<div><span>Water, ' + litres(t.kl) + '</span><span>' + rupee(t.price) + '</span></div>' +
       '<div><span>Distance, ' + t.km.toFixed(1) + ' km</span><span>' + rupee(dist) + '</span></div>' +
       '<div><span>Platform fee</span><span>' + rupee(PLATFORM_FEE) + '</span></div>' +
       '<div class="total"><span>Total</span><span>' + rupee(total) + '</span></div></div>' +
-      '<div class="note">' + whenTxt + ' · arrives in about ' + t.eta + ' min · ' + $("pay").options[$("pay").selectedIndex].text + '</div>' +
+      '<label class="opt"><input type="checkbox" id="share-trip" checked> Share live trip with my family</label>' +
       '<button type="button" class="cta" id="place">Book ' + t.kl + ' KL tanker · ' + rupee(total) + '</button>' +
-      '<div class="note">Free cancellation until the owner starts filling.</div>';
+      '<div class="note">Arrives in about ' + t.eta + ' min. Free cancellation until filling starts. UPI is held and released to the owner only after delivery.</div>';
   }
 
   var STEPS = [
-    ["Order placed", "Sent to nearby owners"],
-    ["Owner accepted", "Driver: Selvam R."],
-    ["Filling at source", "Licensed filling point"],
-    ["On the way", "Following the route on the map"],
-    ["Delivered", "Share the OTP with the driver"]
+    ["Order placed", "Payment held securely"],
+    ["Owner accepted", "Lorry and driver assigned"],
+    ["Filling at source", "Valve seal logged"],
+    ["On the way", "Live GPS · route checked"],
+    ["At your gate", "Share OTP to release water"],
+    ["Delivered", "Flow meter and photo recorded"]
   ];
+  function stepOf(o) {
+    if (o.done) return 5;
+    if (o.progress >= 1) return 4;
+    if (o.progress > 0) return 3;
+    return Math.min(2, Math.floor(o.tick / 2));
+  }
   function renderTracking(el) {
-    var o = state.order, t = o.tanker;
-    var mins = Math.max(0, t.eta - o.step * Math.round(t.eta / 4));
-    el.innerHTML =
-      '<div class="track"><div><span class="label">Order <span class="mono">' + o.id + '</span></span>' +
-      '<h2>' + (o.step >= 4 ? "Water delivered" : "Arriving in " + mins + " min") + '</h2></div>' +
-      '<div class="otp"><div><span class="label">Delivery OTP</span><div class="note">Share only when the lorry is at your gate</div></div><b>' + o.otp + '</b></div>' +
-      '<ol class="steps">' + STEPS.map(function (s, i) {
-        var cls = i < o.step || o.step === 4 ? "done" : i === o.step ? "now" : "";
-        return '<li class="' + cls + '"><span class="mark"></span><div>' + s[0] + '<small>' + s[1] + '</small></div></li>';
-      }).join("") + '</ol>' +
-      '<div class="sel-card"><strong>' + t.owner + '</strong><span class="t-meta"><span class="plate">' + t.plate + '</span><span>' + litres(t.kl) + ' · ' + rupee(o.total) + '</span></span></div>' +
-      '<button type="button" class="ghost" id="reset">' + (o.step >= 4 ? "Book another tanker" : "Cancel order") + '</button></div>';
+    var o = state.order, t = o.tanker, step = stepOf(o);
+    var mins = step >= 4 ? 0 : Math.max(1, Math.round(t.eta * (1 - o.progress)));
+    var head = step === 5 ? "Water delivered" : step === 4 ? "Tanker is at your gate" : "Arriving in " + mins + " min";
+    var html = '<div><span class="label">Order <span class="mono">' + o.id + '</span></span><h2>' + head + '</h2></div>';
+    if (step < 5) {
+      html += '<div class="otp"><div><span class="label">Delivery OTP</span><div class="note">Share only when the lorry is at your gate</div></div><b>' + o.otp + '</b></div>';
+    }
+    html += '<ol class="steps">' + STEPS.map(function (s, i) {
+      var cls = i < step || step === 5 ? "done" : i === step ? "now" : "";
+      return '<li class="' + cls + '"><span class="mark"></span><div>' + s[0] + '<small>' + s[1] + '</small></div></li>';
+    }).join("") + '</ol>';
+    html += '<div class="sel-card"><div class="driver"><div class="avatar">' + t.driver[0] + '</div><div><strong>' + t.driver + '</strong> · ' + t.owner +
+      '<div class="t-meta"><span class="plate">' + t.plate + '</span><span>Seal <span class="mono">KS-' + o.seal + '</span></span></div></div></div>';
+    if (step < 5) {
+      html += '<div class="actions" style="margin-top:8px"><button type="button" class="btn" id="call">Call driver</button><button type="button" class="btn" id="share">Share trip</button><button type="button" class="btn danger" id="sos">SOS</button></div>' +
+        '<div class="note" id="call-note">Calls go through a masked NeerNow number. Your phone number stays private.</div>';
+    }
+    html += '</div>';
+    if (step === 4) {
+      html += '<button type="button" class="cta" id="verify">Driver entered OTP · confirm delivery</button>';
+    }
+    if (step === 5) {
+      html += '<div class="proof"><div><span class="label">Flow meter</span><b>' + litres(t.kl - 0.06) + '</b></div><div><span class="label">Paid</span><b>' + rupee(o.total) + '</b></div>' +
+        '<div><span class="label">TDS at gate</span><b>' + t.tds + ' ppm</b></div><div><span class="label">Photo proof</span><b>Saved 1</b></div></div>' +
+        '<div><span class="label">Rate this delivery</span><div class="stars" id="stars">' + [1, 2, 3, 4, 5].map(function (n) { return '<button type="button" data-n="' + n + '" aria-label="' + n + ' stars" class="' + (n <= state.rating ? "on" : "") + '">★</button>'; }).join("") + '</div></div>' +
+        '<div class="actions"><button type="button" class="btn" id="invoice">GST invoice</button><button type="button" class="btn" id="complain">Report a problem</button></div>';
+    }
+    html += '<button type="button" class="btn" id="reset">' + (step === 5 ? "Book another tanker" : step < 2 ? "Cancel order" : "Need help?") + '</button>';
+    el.innerHTML = '<div class="stack" style="gap:14px">' + html + '</div>';
   }
 
-  function toast(msg) {
-    var t = $("toast"); t.textContent = msg; t.hidden = false;
-    clearTimeout(toast._t); toast._t = setTimeout(function () { t.hidden = true; }, 2600);
+  function renderCustomer() { renderList(); renderMap(); renderSummary(); updateGpsBadge(); }
+  function updateGpsBadge() {
+    var o = state.order;
+    if (!o || stepOf(o) < 3 || o.done) { $("gps-text").textContent = o && o.done ? "Trip complete" : "46 tankers live on GPS"; return; }
+    $("gps-text").textContent = o.tanker.plate + " · " + (o.progress >= 1 ? "arrived" : (22 + (o.tick % 7)) + " km/h") + " · updated " + (1 + (o.tick % 4)) + " s ago";
   }
 
-  function renderAll() { renderList(); renderMap(); renderSummary(); }
-
-  document.querySelectorAll(".seg").forEach(function (g) {
+  document.querySelectorAll("#builder .seg").forEach(function (g) {
     g.addEventListener("click", function (e) {
       var b = e.target.closest("button"); if (!b || state.order) return;
       g.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
-      state[g.dataset.filter] = b.dataset.v; renderAll();
+      state[g.dataset.filter] = b.dataset.v; renderCustomer();
     });
   });
   $("list").addEventListener("click", function (e) {
     var b = e.target.closest(".pick"); if (!b || state.order) return;
-    state.selected = +b.dataset.id; renderAll();
+    state.selected = +b.dataset.id; renderCustomer();
   });
-  $("markers").addEventListener("click", function (e) {
-    var g = e.target.closest(".mk"); if (!g || state.order) return;
-    state.selected = +g.dataset.id; renderAll();
+  $("map").addEventListener("click", function (e) {
+    var g = e.target.closest(".mk"); if (!g || state.order || !g.dataset.id) return;
+    state.selected = +g.dataset.id; renderCustomer();
   });
-  $("when").addEventListener("change", renderSummary);
-  $("pay").addEventListener("change", renderSummary);
   $("builder").addEventListener("submit", function (e) { e.preventDefault(); });
 
   $("summary").addEventListener("click", function (e) {
-    if (e.target.id === "place") {
+    var id = e.target.id, o = state.order;
+    if (id === "place") {
       var t = selected();
       state.order = {
-        id: "NN-" + (48000 + Math.floor(Math.random() * 1999)),
-        otp: String(1000 + Math.floor(Math.random() * 9000)),
-        tanker: t, step: 0, total: t.price + distanceFee(t) + PLATFORM_FEE
+        id: "NN-" + (48000 + Math.floor(Math.random() * 1999)), otp: String(1000 + Math.floor(Math.random() * 9000)),
+        seal: String(20000 + Math.floor(Math.random() * 79999)), tanker: t, tick: 0, progress: 0, done: false,
+        total: t.price + distanceFee(t) + PLATFORM_FEE
       };
+      state.rating = 0;
       toast("Booked. " + t.owner + " is confirming your order.");
-      renderAll();
+      renderCustomer();
       clearInterval(state.timer);
       state.timer = setInterval(function () {
-        state.order.step++;
-        if (state.order.step >= 4) { state.order.step = 4; clearInterval(state.timer); toast("Delivered. Thank you for using NeerNow."); }
-        renderSummary();
-      }, 3500);
+        var o = state.order; if (!o) return;
+        o.tick++;
+        if (o.tick >= 6 && o.progress < 1) o.progress = Math.min(1, o.progress + 0.08);
+        if (o.progress >= 1) { clearInterval(state.timer); toast("Tanker has reached your gate."); }
+        placeLive(); updateGpsBadge(); renderSummary();
+      }, 1000);
     }
-    if (e.target.id === "reset") {
-      var cancelled = state.order.step < 4;
-      clearInterval(state.timer); state.order = null; renderAll();
-      if (cancelled) toast("Order cancelled. No charge applied.");
+    if (id === "verify" && o) { o.done = true; renderCustomer(); toast("Delivered. ₹" + o.total.toLocaleString("en-IN") + " released to the owner."); }
+    if (id === "call") $("call-note").textContent = "Connecting through masked line 0422 4•• ••21. Neither side sees the other's number.";
+    if (id === "share") toast("Live trip link shared with 2 family contacts.");
+    if (id === "sos") toast("SOS sent to NeerNow support with your live location. Our team will call you now.");
+    if (id === "invoice") toast("GST invoice sent to your registered email.");
+    if (id === "complain") toast("Complaint opened. Support will reply within 2 hours.");
+    if (id === "reset") {
+      if (o && !o.done && stepOf(o) >= 2) { toast("Support will call you in under 2 minutes."); return; }
+      var cancelled = o && !o.done;
+      clearInterval(state.timer); state.order = null; renderCustomer();
+      if (cancelled) toast("Order cancelled. The held UPI amount is released back to you.");
     }
+    var star = e.target.closest("#stars button");
+    if (star) { state.rating = +star.dataset.n; renderSummary(); toast("Thanks for rating " + state.rating + " stars."); }
   });
 
-  renderAll();
+  /* =========================================================
+     OWNER
+     ========================================================= */
+  var owner = { earnings: 8650, trips: 7, online: true, requestLeft: 30, request: true };
+  var FLEET = [
+    { plate: "TN 66 BK 4417", kl: 12, driver: "Selvam R.", status: ["On trip", "info"], gps: ["Live · 3 s", "good"], docs: [["Insurance to Mar 2027", "good"]] },
+    { plate: "TN 66 BK 4420", kl: 12, driver: "Kumar D.", status: ["Available", "good"], gps: ["Live · 8 s", "good"], docs: [["FC due in 18 days", "warn"]] },
+    { plate: "TN 38 AB 7710", kl: 6, driver: "Unassigned", status: ["Suspended", "bad"], gps: ["Offline 2 d", "bad"], docs: [["Insurance expired", "bad"]] },
+    { plate: "TN 66 CA 0931", kl: 24, driver: "Murali S.", status: ["Maintenance", "muted"], gps: ["Parked", "muted"], docs: [["All valid", "good"]] }
+  ];
+  var PRICES = [{ kl: 3, v: 480, cap: 600 }, { kl: 6, v: 780, cap: 950 }, { kl: 9, v: 1100, cap: 1350 }, { kl: 12, v: 1450, cap: 1700 }, { kl: 24, v: 2600, cap: 2800 }];
+
+  function renderOwnerKpis() {
+    $("owner-kpis").innerHTML =
+      '<div class="kpi"><span>Earned today</span><b>' + rupee(owner.earnings) + '</b><em class="up">' + owner.trips + ' trips</em></div>' +
+      '<div class="kpi"><span>Acceptance rate</span><b>94%</b><em class="up">Keep above 85%</em></div>' +
+      '<div class="kpi"><span>Rating</span><b>4.8★</b><em class="up">1,240 trips</em></div>' +
+      '<div class="kpi"><span>Short-delivery complaints</span><b>0</b><em class="up">Last 30 days</em></div>';
+  }
+  function renderRequest() {
+    var slot = $("request-slot");
+    if (!owner.online) { slot.innerHTML = '<div class="panel pad soft">You are offline. Turn on "Accepting orders" to receive new bookings.</div>'; return; }
+    if (!owner.request) { slot.innerHTML = '<div class="panel pad soft">No new requests. You will hear a sound and get an SMS when one arrives.</div>'; return; }
+    slot.innerHTML = '<div class="request"><div><span class="label">New order · <span class="timer" id="req-timer">' + owner.requestLeft + ' s to respond</span></span>' +
+      '<h3>12 KL treated water · Kurinji Nagar, Saravanampatti</h3>' +
+      '<p class="soft" style="font-size:14px">3.1 km from TN 66 BK 4420 · customer rating 4.9 · UPI held · you earn <b>' + rupee(1450 * 0.92 + 37) + '</b></p></div>' +
+      '<div class="actions"><button type="button" class="btn" id="decline">Decline</button><button type="button" class="btn yellow" id="accept">Accept and assign Kumar D.</button></div></div>';
+  }
+  function renderFleet() {
+    $("fleet").innerHTML = FLEET.map(function (f) {
+      return '<tr><td style="white-space:nowrap"><span class="plate">' + f.plate + '</span> <span class="soft num">' + f.kl + ' KL</span></td><td>' + f.driver + '</td>' +
+        '<td><span class="pill ' + f.status[1] + '">' + f.status[0] + '</span></td><td><span class="pill ' + f.gps[1] + '">' + f.gps[0] + '</span></td>' +
+        '<td>' + f.docs.map(function (d) { return '<span class="pill ' + d[1] + '">' + d[0] + '</span>'; }).join(" ") + '</td></tr>';
+    }).join("");
+  }
+  function renderPrices() {
+    $("price-grid").innerHTML = PRICES.map(function (p, i) {
+      return '<label for="price-' + i + '">' + p.kl + ' KL (' + litres(p.kl) + ')<input id="price-' + i + '" data-i="' + i + '" type="number" inputmode="numeric" value="' + p.v + '"' + (p.v > p.cap ? ' class="over"' : "") + '><span class="note">Zone cap ' + rupee(p.cap) + '</span></label>';
+    }).join("");
+  }
+  $("price-grid").addEventListener("input", function (e) {
+    var i = e.target.dataset.i; if (i == null) return;
+    PRICES[i].v = +e.target.value || 0;
+    e.target.classList.toggle("over", PRICES[i].v > PRICES[i].cap);
+  });
+  $("save-prices").addEventListener("click", function () {
+    var over = PRICES.filter(function (p) { return p.v > p.cap; });
+    $("price-note").textContent = over.length ? over.map(function (p) { return p.kl + " KL"; }).join(", ") + " is above the zone cap. Lower it to save." : "Saved at " + nowTime() + ". Customers see new prices on their next search.";
+    $("price-note").style.color = over.length ? "var(--bad)" : "var(--good)";
+  });
+  $("online").addEventListener("click", function () {
+    owner.online = !owner.online;
+    this.setAttribute("aria-checked", owner.online ? "true" : "false");
+    renderRequest();
+  });
+  $("request-slot").addEventListener("click", function (e) {
+    if (e.target.id === "accept") {
+      owner.request = false; owner.trips++; owner.earnings += 1371;
+      FLEET[1].status = ["On trip", "info"]; FLEET[1].gps = ["Live · 1 s", "good"];
+      renderOwnerKpis(); renderFleet(); renderRequest();
+      toast("Accepted. Kumar D. has the route and customer OTP check on the driver app.");
+    }
+    if (e.target.id === "decline") { owner.request = false; renderRequest(); toast("Declined. The order goes to the next nearest lorry."); }
+  });
+  setInterval(function () {
+    if (!owner.request || !owner.online) return;
+    owner.requestLeft--;
+    if (owner.requestLeft <= 0) { owner.request = false; renderRequest(); return; }
+    var t = $("req-timer"); if (t) t.textContent = owner.requestLeft + " s to respond";
+  }, 1000);
+
+  /* =========================================================
+     ADMIN
+     ========================================================= */
+  var ALERTS = [
+    { lvl: "crit", title: "GPS offline 7 min during a trip", sub: "TN 38 H 6602 · order NN-48213 · last seen Kalapatti Rd", plate: "TN 38 H 6602" },
+    { lvl: "crit", title: "3 wrong delivery OTP attempts", sub: "Order NN-48199 · driver Babu N. · delivery paused", plate: "TN 99 R 3308" },
+    { lvl: "warn", title: "Route deviation 1.4 km", sub: "TN 37 AZ 9930 · stopped 9 min off route near Vilankurichi", plate: "TN 37 AZ 9930" },
+    { lvl: "warn", title: "Delivered 10.9 KL of 12 KL", sub: "Flow meter short by 9% · order NN-48160", plate: "TN 66 BK 4417" },
+    { lvl: "info", title: "Seal number mismatch at gate", sub: "Order NN-48191 · customer asked to recheck photo", plate: "TN 38 CX 2081" }
+  ];
+  var KYC = [
+    { owner: "Noyyal Tankers", plate: "TN 38 BZ 5521", docs: [["RC", 1], ["Licence", 1], ["Insurance", 1], ["Water test", 1], ["GPS device", 1]], when: "Today 09:12" },
+    { owner: "Thudiyalur Water Co.", plate: "TN 37 CK 1180", docs: [["RC", 1], ["Licence", 1], ["Insurance", 1], ["Water test", 0], ["GPS device", 1]], when: "Yesterday" },
+    { owner: "S. Ramesh (single lorry)", plate: "TN 99 AD 4402", docs: [["RC", 1], ["Licence", 0], ["Insurance", 1], ["Water test", 1], ["GPS device", 0]], when: "2 days ago" }
+  ];
+  var COMPLAINTS = [
+    { id: "NN-48160", issue: "Less water than paid for", age: "26 h", pill: "bad" },
+    { id: "NN-48188", issue: "Driver asked for extra cash", age: "3 h", pill: "warn" },
+    { id: "NN-48201", issue: "Water looked muddy", age: "40 min", pill: "warn" }
+  ];
+
+  function renderAdminMap() {
+    var pts = [[300, 115, "good"], [535, 60, "yellow"], [90, 215, "bad"], [720, 115, "bad"], [385, 250, "good"], [185, 40, "bad"], [680, 215, "good"], [250, 170, "yellow"], [470, 80, "good"], [700, 250, "yellow"], [60, 115, "good"], [535, 180, "yellow"]];
+    $("admin-map").innerHTML = baseMap() + pts.map(function (p) {
+      var fill = p[2] === "good" ? "var(--good)" : p[2] === "bad" ? "var(--bad)" : "var(--yellow)";
+      return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="' + (p[2] === "bad" ? 16 : 0) + '" fill="' + fill + '" fill-opacity=".2"/>' +
+        '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="8" fill="' + fill + '" stroke="var(--surface)" stroke-width="2.5"/>';
+    }).join("");
+  }
+  function renderAlerts() {
+    var open = ALERTS.filter(function (a) { return !a.acked; }).length;
+    $("alert-count").textContent = open + " open";
+    $("alerts").innerHTML = ALERTS.map(function (a, i) {
+      return '<li class="alert ' + a.lvl + (a.acked ? " acked" : "") + '"><span class="stripe"></span><div><strong>' + a.title + '</strong><span>' + a.sub + '</span></div>' +
+        (a.acked ? '<span class="pill muted">Handled</span>' : '<button type="button" class="btn" data-ack="' + i + '">' + (a.lvl === "crit" ? "Call driver" : "Review") + '</button>') + '</li>';
+    }).join("");
+  }
+  function renderKyc() {
+    $("kyc").innerHTML = KYC.map(function (k, i) {
+      var ok = k.docs.every(function (d) { return d[1]; });
+      var decision = k.decided ? '<span class="pill ' + (k.decided === "Approved" ? "good" : "bad") + '">' + k.decided + '</span>' :
+        k.confirm ? '<span class="confirm">Approve ' + k.plate + '? <button type="button" class="btn primary" data-yes="' + i + '">Yes, go live</button><button type="button" class="btn" data-no="' + i + '">Back</button></span>' :
+        '<span class="actions"><button type="button" class="btn primary" data-approve="' + i + '"' + (ok ? "" : " disabled title=\"All documents must pass first\"") + '>Approve</button><button type="button" class="btn danger" data-reject="' + i + '">' + (ok ? "Reject" : "Request docs") + '</button></span>';
+      return '<tr><td><strong>' + k.owner + '</strong></td><td><span class="plate">' + k.plate + '</span></td>' +
+        '<td><div class="docs">' + k.docs.map(function (d) { return '<span class="pill ' + (d[1] ? "good" : "warn") + '">' + (d[1] ? "✓ " : "Missing ") + d[0] + '</span>'; }).join("") + '</div></td>' +
+        '<td class="soft">' + k.when + '</td><td>' + decision + '</td></tr>';
+    }).join("");
+  }
+  function renderComplaints() {
+    $("k-complaints").textContent = COMPLAINTS.filter(function (c) { return !c.done; }).length;
+    $("complaints").innerHTML = COMPLAINTS.map(function (c, i) {
+      return '<tr><td class="mono">' + c.id + '</td><td>' + c.issue + '</td><td><span class="pill ' + (c.done ? "muted" : c.pill) + '">' + (c.done ? "Closed" : c.age) + '</span></td>' +
+        '<td class="r">' + (c.done ? "" : '<button type="button" class="btn" data-refund="' + i + '">Refund and close</button>') + '</td></tr>';
+    }).join("");
+  }
+  function addLog(text) {
+    var li = document.createElement("li");
+    li.innerHTML = "<time>" + nowTime() + "</time><span>" + text + "</span>";
+    $("log").prepend(li);
+  }
+  $("alerts").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-ack]"); if (!b) return;
+    var a = ALERTS[b.dataset.ack]; a.acked = true; renderAlerts();
+    addLog("Priya (Ops) handled alert: " + a.title.toLowerCase() + " (" + a.plate + ")");
+    toast(a.lvl === "crit" ? "Calling driver through masked line. Alert marked handled." : "Alert reviewed and logged.");
+  });
+  $("kyc").addEventListener("click", function (e) {
+    var b = e.target.closest("button"); if (!b) return;
+    var d = b.dataset;
+    if (d.approve != null) KYC[d.approve].confirm = true;
+    if (d.no != null) KYC[d.no].confirm = false;
+    if (d.yes != null) { var k = KYC[d.yes]; k.decided = "Approved"; addLog("Priya (Ops) approved " + k.owner + ", " + k.plate); toast(k.plate + " is live and will start getting orders."); }
+    if (d.reject != null) { var r = KYC[d.reject]; r.decided = "Docs requested"; addLog("Priya (Ops) requested missing documents from " + r.owner); toast("SMS sent to " + r.owner + " listing the missing documents."); }
+    renderKyc();
+  });
+  $("complaints").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-refund]"); if (!b) return;
+    var c = COMPLAINTS[b.dataset.refund]; c.done = true; renderComplaints();
+    addLog("Priya (Ops) refunded and closed " + c.id + ": " + c.issue.toLowerCase());
+    toast("Refund issued to the customer's UPI. Owner's payout adjusted.");
+  });
+
+  /* ---------- Boot ---------- */
+  renderCustomer(); renderOwnerKpis(); renderRequest(); renderFleet(); renderPrices();
+  renderAdminMap(); renderAlerts(); renderKyc(); renderComplaints();
+  var start = (location.hash || "").replace("#", "");
+  showView(["customer", "owner", "admin"].indexOf(start) > -1 ? start : "customer");
 })();
 </script>

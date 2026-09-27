@@ -4,16 +4,13 @@ A portal, launching first in Coimbatore, that connects households, apartments an
 
 ## Prototype
 
-`prototype/index.html` is a clickable, single-file prototype of the customer ordering page (sample data, no backend). Open it in any browser.
+`prototype/index.html` is a clickable, single-file prototype with three portals (sample data, no backend). Open it in any browser and switch portals at the top, or go straight to one with `#customer`, `#owner` or `#admin`.
 
-It shows:
+- **Customer:** choose a tanker by capacity, water source and TDS; book with UPI held until delivery; live GPS tracking; delivery OTP; masked driver calls, trip sharing and SOS; flow meter and photo proof; rating, invoice and complaints.
+- **Tanker owner:** accept or decline order requests, fleet with GPS and document-expiry status, price card limited by zone caps, weekly payouts.
+- **Admin:** live fleet map, safety and fraud alerts, owner verification queue, complaints with refunds, security status, audit log.
 
-- Delivery address, time slot (ASAP or scheduled) and payment choice (UPI / cash)
-- Filters by water source (treated/RO vs borewell) and capacity (3–24 KL)
-- A map and list of nearby tankers with owner, lorry number, capacity, rating, distance, ETA and fixed price
-- A price breakdown (water + distance + platform fee) and a Book button
-- Live order tracking with a 4-digit delivery OTP and status steps
-- A "Own a tanker? Join" section for supplier onboarding
+See `docs/platform-features.md` for the full feature, GPS and security plan.
 
 ## Launch city: Coimbatore
 
