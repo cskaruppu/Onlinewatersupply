@@ -1,0 +1,53 @@
+# Zero-trust networking inside the project: nothing can connect to a pod unless allowed below.
+#   internet -> router -> web -> api -> postgres / redis
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: neernow-default-deny
+  labels: { app.kubernetes.io/part-of: neernow }
+spec:
+  podSelector: {}
+  policyTypes: [Ingress]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: neernow-allow-router-to-web
+  labels: { app.kubernetes.io/part-of: neernow }
+spec:
+  podSelector: { matchLabels: { app.kubernetes.io/name: neernow-web } }
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector: { matchLabels: { policy-group.network.openshift.io/ingress: "" } }
+        # Routers that run on the host network (common on bare metal).
+        - namespaceSelector: { matchLabels: { policy-group.network.openshift.io/host-network: "" } }
+      ports: [{ protocol: TCP, port: 3000 }]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: neernow-allow-web-to-api
+  labels: { app.kubernetes.io/part-of: neernow }
+spec:
+  podSelector: { matchLabels: { app.kubernetes.io/name: neernow-api } }
+  policyTypes: [Ingress]
+  ingress:
+    - from: [{ podSelector: { matchLabels: { app.kubernetes.io/name: neernow-web } } }]
+      ports: [{ protocol: TCP, port: 3001 }]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: neernow-allow-api-to-data
+  labels: { app.kubernetes.io/part-of: neernow }
+spec:
+  podSelector:
+    matchExpressions:
+      - { key: app.kubernetes.io/name, operator: In, values: [neernow-postgres, neernow-redis] }
+  policyTypes: [Ingress]
+  ingress:
+    - from: [{ podSelector: { matchLabels: { app.kubernetes.io/name: neernow-api } } }]
+      ports:
+        - { protocol: TCP, port: 5432 }
+        - { protocol: TCP, port: 6379 }

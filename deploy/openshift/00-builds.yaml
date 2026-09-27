@@ -1,0 +1,52 @@
+# Image streams hold the built images; BuildConfigs build them inside OpenShift from uploaded source.
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: neernow-api
+  labels: { app.kubernetes.io/name: neernow-api, app.kubernetes.io/part-of: neernow }
+spec:
+  lookupPolicy: { local: true }
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: neernow-web
+  labels: { app.kubernetes.io/name: neernow-web, app.kubernetes.io/part-of: neernow }
+spec:
+  lookupPolicy: { local: true }
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: neernow-api
+  labels: { app.kubernetes.io/name: neernow-api, app.kubernetes.io/part-of: neernow }
+spec:
+  runPolicy: Serial
+  source: { type: Binary }
+  strategy:
+    type: Docker
+    dockerStrategy: { dockerfilePath: Dockerfile }
+  output:
+    to: { kind: ImageStreamTag, name: "neernow-api:latest" }
+  resources:
+    limits: { cpu: "2", memory: 2Gi }
+  successfulBuildsHistoryLimit: 3
+  failedBuildsHistoryLimit: 3
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: neernow-web
+  labels: { app.kubernetes.io/name: neernow-web, app.kubernetes.io/part-of: neernow }
+spec:
+  runPolicy: Serial
+  source: { type: Binary }
+  strategy:
+    type: Docker
+    dockerStrategy: { dockerfilePath: Dockerfile }
+  output:
+    to: { kind: ImageStreamTag, name: "neernow-web:latest" }
+  resources:
+    limits: { cpu: "2", memory: 3Gi }
+  successfulBuildsHistoryLimit: 3
+  failedBuildsHistoryLimit: 3

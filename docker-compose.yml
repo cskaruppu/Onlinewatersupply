@@ -1,0 +1,70 @@
+# Local development stack: PostgreSQL, Redis, API and web.
+#   ./scripts/local-up.sh        (or: docker compose up -d --build)
+#   open http://localhost:3000
+# The secrets below are for local use only. OpenShift gets freshly generated secrets (deploy/openshift/deploy.sh).
+name: neernow
+
+# Same runtime restrictions as OpenShift's restricted-v2 policy: random non-root UID in group 0,
+# no Linux capabilities, no privilege escalation.
+x-openshift-like: &openshift-like
+  user: "1000680000:0"
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+
+x-dev-secrets: &dev-secrets
+  JWT_SECRET: local-dev-jwt-secret-change-me-0123456789abcdef
+  HASH_KEY: local-dev-hash-key-change-me-0123456789abcdefgh
+  DATA_ENCRYPTION_KEY: bG9jYWwtZGV2LWtleS0zMi1ieXRlcy1sb25nLW9rISE=
+
+services:
+  postgres:
+    <<: *openshift-like
+    image: quay.io/sclorg/postgresql-16-c9s
+    environment:
+      POSTGRESQL_USER: neernow
+      POSTGRESQL_PASSWORD: neernow-local
+      POSTGRESQL_DATABASE: neernow
+    volumes: [pgdata:/var/lib/pgsql/data]
+    healthcheck:
+      test: ["CMD", "pg_isready", "-q"]
+      interval: 3s
+      retries: 20
+
+  redis:
+    <<: *openshift-like
+    image: quay.io/sclorg/redis-7-c9s
+    environment:
+      REDIS_PASSWORD: redis-local
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "redis-local", "--no-auth-warning", "ping"]
+      interval: 3s
+      retries: 20
+
+  api:
+    <<: *openshift-like
+    build: ./apps/api
+    read_only: true
+    tmpfs: [/tmp]
+    environment:
+      <<: *dev-secrets
+      NODE_ENV: production
+      DATABASE_URL: postgres://neernow:neernow-local@postgres:5432/neernow
+      REDIS_URL: redis://:redis-local@redis:6379/0
+      APP_ORIGINS: http://localhost:3000
+      COOKIE_SECURE: "false"
+      SMS_PROVIDER: console
+      ALLOW_CONSOLE_SMS: "true"
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+
+  web:
+    <<: *openshift-like
+    build: ./apps/web
+    environment:
+      API_INTERNAL_URL: http://api:3001
+    ports: ["3000:3000"]
+    depends_on: [api]
+
+volumes:
+  pgdata:

@@ -1,0 +1,64 @@
+# PostgreSQL 16 (Red Hat Software Collections image, runs with OpenShift's random UID).
+# For production, prefer a managed database or the Crunchy Postgres operator with backups and replicas.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: neernow-postgres-data
+  labels: { app.kubernetes.io/name: neernow-postgres, app.kubernetes.io/part-of: neernow }
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests: { storage: 5Gi }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: neernow-postgres
+  labels: { app.kubernetes.io/name: neernow-postgres, app.kubernetes.io/part-of: neernow, app.kubernetes.io/component: database }
+spec:
+  replicas: 1
+  strategy: { type: Recreate }
+  selector:
+    matchLabels: { app.kubernetes.io/name: neernow-postgres }
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: neernow-postgres, app.kubernetes.io/part-of: neernow }
+    spec:
+      containers:
+        - name: postgres
+          image: quay.io/sclorg/postgresql-16-c9s
+          ports: [{ name: postgres, containerPort: 5432 }]
+          env:
+            - { name: POSTGRESQL_USER, value: neernow }
+            - { name: POSTGRESQL_DATABASE, value: neernow }
+            - name: POSTGRESQL_PASSWORD
+              valueFrom: { secretKeyRef: { name: neernow-secrets, key: POSTGRESQL_PASSWORD } }
+          readinessProbe:
+            exec: { command: ["/bin/sh", "-c", "pg_isready -h 127.0.0.1 -p 5432 -q"] }
+            periodSeconds: 5
+          livenessProbe:
+            exec: { command: ["/bin/sh", "-c", "pg_isready -h 127.0.0.1 -p 5432 -q"] }
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          resources:
+            requests: { cpu: 100m, memory: 256Mi }
+            limits: { cpu: "1", memory: 1Gi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            capabilities: { drop: [ALL] }
+            seccompProfile: { type: RuntimeDefault }
+          volumeMounts:
+            - { name: data, mountPath: /var/lib/pgsql/data }
+      volumes:
+        - name: data
+          persistentVolumeClaim: { claimName: neernow-postgres-data }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: neernow-postgres
+  labels: { app.kubernetes.io/name: neernow-postgres, app.kubernetes.io/part-of: neernow }
+spec:
+  selector: { app.kubernetes.io/name: neernow-postgres }
+  ports: [{ name: postgres, port: 5432, targetPort: postgres }]

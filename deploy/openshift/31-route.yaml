@@ -1,0 +1,15 @@
+# Public HTTPS address. TLS ends at the OpenShift router; plain HTTP is redirected to HTTPS.
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: neernow
+  labels: { app.kubernetes.io/name: neernow-web, app.kubernetes.io/part-of: neernow }
+  annotations:
+    haproxy.router.openshift.io/hsts_header: max-age=31536000;includeSubDomains
+    haproxy.router.openshift.io/timeout: 30s
+spec:
+  to: { kind: Service, name: neernow-web, weight: 100 }
+  port: { targetPort: http }
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
