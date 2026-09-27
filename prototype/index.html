@@ -1,0 +1,573 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NeerNow Tanker Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
+<style>
+  :root {
+    --ground: #EEF3F5;
+    --surface: #FFFFFF;
+    --surface-2: #F6F9FA;
+    --ink: #0E2A3B;
+    --ink-soft: #4A6070;
+    --line: #D5E0E5;
+    --water: #1478A3;
+    --water-soft: #DCEEF6;
+    --yellow: #F2B705;
+    --yellow-ink: #2B2100;
+    --good: #1F8A55;
+    --good-soft: #DDF3E7;
+    --warn: #B26B00;
+    --warn-soft: #FBEBCF;
+    --map-bg: #E4ECEF;
+    --map-road: #FFFFFF;
+    --map-block: #D6E2E7;
+    --shadow: 0 1px 2px rgba(14, 42, 59, .06), 0 6px 20px rgba(14, 42, 59, .06);
+    --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+    --body: "Figtree", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --ground: #0A1A24;
+      --surface: #112633;
+      --surface-2: #0E212C;
+      --ink: #E4EEF3;
+      --ink-soft: #97AEBB;
+      --line: #23404F;
+      --water: #4DB3DE;
+      --water-soft: #143A4C;
+      --yellow: #F5C230;
+      --yellow-ink: #221A00;
+      --good: #4CC98A;
+      --good-soft: #143828;
+      --warn: #E8A849;
+      --warn-soft: #3A2A10;
+      --map-bg: #0F2330;
+      --map-road: #1D3A4A;
+      --map-block: #15303E;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 20px rgba(0, 0, 0, .25);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --ground: #0A1A24;
+    --surface: #112633;
+    --surface-2: #0E212C;
+    --ink: #E4EEF3;
+    --ink-soft: #97AEBB;
+    --line: #23404F;
+    --water: #4DB3DE;
+    --water-soft: #143A4C;
+    --yellow: #F5C230;
+    --yellow-ink: #221A00;
+    --good: #4CC98A;
+    --good-soft: #143828;
+    --warn: #E8A849;
+    --warn-soft: #3A2A10;
+    --map-bg: #0F2330;
+    --map-road: #1D3A4A;
+    --map-block: #15303E;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 20px rgba(0, 0, 0, .25);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font: 15px/1.5 var(--body);
+    padding-inline: 16px;
+    padding-block: 0 48px;
+  }
+  h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; }
+  button, input, select { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--water); outline-offset: 2px; }
+  .wrap { max-width: 1180px; margin-inline: auto; }
+  .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  .num { font-variant-numeric: tabular-nums; }
+  .label {
+    font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  /* Header */
+  .top {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    padding-block: 18px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-family: var(--display); font-weight: 800; font-size: 22px; letter-spacing: -.01em; }
+  .brand svg { flex: none; }
+  .top nav { display: flex; gap: 6px; flex-wrap: wrap; }
+  .top nav a {
+    color: var(--ink-soft); text-decoration: none; font-weight: 600; font-size: 14px;
+    padding: 7px 12px; border-radius: 8px;
+  }
+  .top nav a:hover { background: var(--surface); color: var(--ink); }
+  .top nav a.owner { color: var(--ink); border: 1px solid var(--line); }
+
+  /* Intro strip */
+  .intro {
+    display: grid; grid-template-columns: 1.3fr 1fr; gap: 24px; align-items: end;
+    padding-block: 12px 24px;
+  }
+  .intro h1 { font-size: clamp(30px, 4.6vw, 48px); line-height: 1.05; letter-spacing: -.02em; font-weight: 800; }
+  .intro h1 em { font-style: normal; color: var(--water); }
+  .intro p { margin: 10px 0 0; color: var(--ink-soft); max-width: 58ch; }
+  .stats { display: flex; gap: 22px; flex-wrap: wrap; justify-content: flex-end; }
+  .stat b { display: block; font-family: var(--display); font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .stat span { font-size: 13px; color: var(--ink-soft); }
+
+  /* Layout */
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px; align-items: start; }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+  .panel + .panel { margin-top: 0; }
+  .col { display: grid; gap: 20px; }
+
+  /* Order builder */
+  .builder { padding: 18px; display: grid; gap: 16px; }
+  .row { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 14px; }
+  .field { display: grid; gap: 6px; }
+  .field input, .field select {
+    background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px;
+    padding: 10px 12px; width: 100%;
+  }
+  .seg { display: flex; flex-wrap: wrap; gap: 6px; }
+  .seg button {
+    background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px;
+    padding: 7px 13px; font-size: 14px; font-weight: 600;
+  }
+  .seg button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--surface); }
+  .filters { display: flex; flex-wrap: wrap; gap: 18px 28px; }
+
+  /* Map */
+  .map { position: relative; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); background: var(--map-bg); }
+  .map svg { display: block; width: 100%; height: auto; }
+  .map .legend {
+    position: absolute; left: 12px; bottom: 12px; background: var(--surface); border: 1px solid var(--line);
+    border-radius: 10px; padding: 6px 10px; font-size: 12.5px; display: flex; gap: 12px; flex-wrap: wrap;
+  }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
+
+  /* Tanker list */
+  .list-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 16px 18px 6px; flex-wrap: wrap; }
+  .list-head h2 { font-size: 20px; }
+  .list-head .sort { font-size: 13.5px; color: var(--ink-soft); }
+  .tankers { list-style: none; margin: 0; padding: 6px 10px 12px; display: grid; gap: 4px; }
+  .tanker {
+    display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: 14px; align-items: center;
+    padding: 12px 10px; border-radius: 12px; border: 1px solid transparent;
+  }
+  .tanker:hover { background: var(--surface-2); }
+  .tanker.selected { background: var(--water-soft); border-color: var(--water); }
+  .cap {
+    width: 56px; height: 56px; border-radius: 12px; background: var(--yellow); color: var(--yellow-ink);
+    display: grid; place-content: center; text-align: center; line-height: 1;
+  }
+  .cap b { font-family: var(--display); font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .cap small { font-size: 10px; font-weight: 700; letter-spacing: .06em; margin-top: 3px; }
+  .t-name { font-weight: 700; font-size: 15.5px; }
+  .t-meta { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 13px; color: var(--ink-soft); margin-top: 2px; }
+  .plate {
+    font-family: var(--mono); font-size: 11.5px; font-weight: 600; color: var(--ink);
+    border: 1.5px solid var(--ink); border-radius: 4px; padding: 0 5px; background: var(--surface);
+  }
+  .chip { display: inline-block; font-size: 11.5px; font-weight: 700; padding: 1px 8px; border-radius: 999px; }
+  .chip.treated { background: var(--water-soft); color: var(--water); }
+  .chip.bore { background: var(--warn-soft); color: var(--warn); }
+  .t-right { text-align: right; display: grid; gap: 6px; justify-items: end; }
+  .price { font-family: var(--display); font-weight: 700; font-size: 19px; font-variant-numeric: tabular-nums; }
+  .eta { font-size: 13px; font-weight: 700; color: var(--good); }
+  .pick {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 5px 12px;
+    font-size: 13.5px; font-weight: 700;
+  }
+  .tanker.selected .pick { background: var(--water); border-color: var(--water); color: #fff; }
+  .empty { padding: 20px 18px; color: var(--ink-soft); }
+
+  /* Summary */
+  .summary { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); padding: 18px; display: grid; gap: 14px; box-shadow: var(--shadow); }
+  .summary h2 { font-size: 20px; }
+  .sel-card { background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: grid; gap: 4px; }
+  .lines { display: grid; gap: 6px; font-size: 14px; }
+  .lines div { display: flex; justify-content: space-between; gap: 12px; }
+  .lines .total { border-top: 1px dashed var(--line); padding-top: 8px; font-weight: 700; font-size: 16px; }
+  .note { font-size: 12.5px; color: var(--ink-soft); }
+  .cta {
+    background: var(--yellow); color: var(--yellow-ink); border: 0; border-radius: 12px; padding: 14px 16px;
+    font-weight: 800; font-size: 16px; font-family: var(--display); letter-spacing: .01em;
+  }
+  .cta:hover { filter: brightness(1.05); }
+  .cta:disabled { opacity: .5; cursor: not-allowed; }
+  .ghost { background: transparent; border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; font-weight: 600; }
+
+  /* Tracking */
+  .track { display: grid; gap: 14px; }
+  .otp { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--good-soft); border-radius: 12px; padding: 12px 14px; }
+  .otp b { font-family: var(--mono); font-size: 24px; letter-spacing: .18em; color: var(--good); }
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+  .steps li { display: grid; grid-template-columns: 22px 1fr; gap: 10px; position: relative; padding-bottom: 14px; font-size: 14px; }
+  .steps li:last-child { padding-bottom: 0; }
+  .steps li::before {
+    content: ""; position: absolute; left: 10px; top: 20px; bottom: 0; width: 2px; background: var(--line);
+  }
+  .steps li:last-child::before { display: none; }
+  .steps .mark { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--line); background: var(--surface); display: grid; place-content: center; position: relative; z-index: 1; }
+  .steps li.done .mark { background: var(--good); border-color: var(--good); }
+  .steps li.done .mark::after { content: ""; width: 8px; height: 4px; border: 2px solid #fff; border-top: 0; border-right: 0; transform: rotate(-45deg) translate(1px, -1px); }
+  .steps li.now .mark { border-color: var(--water); }
+  .steps li.now .mark::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--water); }
+  .steps small { display: block; color: var(--ink-soft); font-size: 12.5px; }
+  .steps li:not(.done):not(.now) { color: var(--ink-soft); }
+
+  /* How it works + owners */
+  .how { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; padding: 18px; }
+  .how h3 { font-size: 16px; margin-bottom: 4px; }
+  .how p { margin: 0; color: var(--ink-soft); font-size: 14px; }
+  .how .n { font-family: var(--mono); font-size: 12px; color: var(--water); font-weight: 600; }
+  .owners {
+    display: grid; grid-template-columns: 1.3fr 1fr; gap: 20px; align-items: center; padding: 20px;
+    background: var(--ink); color: var(--surface); border-radius: 14px;
+  }
+  .owners h2 { font-size: 24px; }
+  .owners p { margin: 6px 0 0; opacity: .8; }
+  .owners ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; font-size: 14px; }
+  .owners li::before { content: "✓"; color: var(--yellow); font-weight: 800; margin-right: 8px; }
+  .demo-flag { font-size: 12px; color: var(--ink-soft); text-align: center; margin-top: 18px; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 18px); transform: translateX(-50%);
+    background: var(--ink); color: var(--surface); padding: 10px 16px; border-radius: 10px; font-weight: 600; font-size: 14px;
+    box-shadow: var(--shadow); max-width: calc(100vw - 32px);
+  }
+
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: minmax(0, 1fr); }
+    .summary { position: static; }
+    .intro { grid-template-columns: 1fr; }
+    .stats { justify-content: flex-start; }
+    .how { grid-template-columns: 1fr; }
+    .owners { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 620px) {
+    .row { grid-template-columns: 1fr; }
+    .tanker { grid-template-columns: 48px minmax(0, 1fr); }
+    .cap { width: 48px; height: 48px; }
+    .t-right { grid-column: 2; display: flex; justify-content: space-between; align-items: center; text-align: left; flex-wrap: wrap; }
+    .top nav a:not(.owner) { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true">
+        <path d="M15 3 C15 3 6 13.5 6 19 a9 9 0 0 0 18 0 C24 13.5 15 3 15 3 Z" fill="var(--water)"/>
+        <path d="M10.5 19.5 a4.5 4.5 0 0 0 4.5 4.5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
+      </svg>
+      NeerNow
+    </div>
+    <nav aria-label="Main">
+      <a href="#order">Order water</a>
+      <a href="#how">How it works</a>
+      <a href="#owners" class="owner">Own a tanker? Join</a>
+    </nav>
+  </header>
+
+  <section class="intro">
+    <div>
+      <h1>Water at your gate <em>within the hour.</em></h1>
+      <p>Compare verified tanker owners near you by capacity, water source, arrival time and price. Book in a minute, pay by UPI or cash, and track the lorry until it reaches your sump.</p>
+    </div>
+    <div class="stats" aria-label="Network today (sample figures)">
+      <div class="stat"><b id="stat-online">46</b><span>tankers online nearby</span></div>
+      <div class="stat"><b>32 min</b><span>average arrival</span></div>
+      <div class="stat"><b>4.7★</b><span>owner rating</span></div>
+    </div>
+  </section>
+
+  <div class="grid" id="order">
+    <div class="col">
+      <form class="panel builder" id="builder" autocomplete="off">
+        <div class="row">
+          <div class="field">
+            <label class="label" for="addr">Delivery address</label>
+            <input id="addr" value="14, 3rd Cross St, Vijayanagar, Velachery, Chennai 600042">
+          </div>
+          <div class="field">
+            <label class="label" for="when">When</label>
+            <select id="when">
+              <option value="now">As soon as possible</option>
+              <option value="eve">Today, 5–7 PM</option>
+              <option value="morn">Tomorrow, 6–8 AM</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="label" for="pay">Payment</label>
+            <select id="pay">
+              <option value="upi">UPI on booking</option>
+              <option value="cod">Cash on delivery</option>
+            </select>
+          </div>
+        </div>
+        <div class="filters">
+          <div class="field">
+            <span class="label" id="lbl-src">Water source</span>
+            <div class="seg" role="group" aria-labelledby="lbl-src" data-filter="src">
+              <button type="button" data-v="all" aria-pressed="true">All</button>
+              <button type="button" data-v="treated" aria-pressed="false">Treated / Metro</button>
+              <button type="button" data-v="bore" aria-pressed="false">Borewell</button>
+            </div>
+          </div>
+          <div class="field">
+            <span class="label" id="lbl-cap">Capacity</span>
+            <div class="seg" role="group" aria-labelledby="lbl-cap" data-filter="cap">
+              <button type="button" data-v="all" aria-pressed="true">Any</button>
+              <button type="button" data-v="small" aria-pressed="false">Up to 6 KL</button>
+              <button type="button" data-v="mid" aria-pressed="false">9–12 KL</button>
+              <button type="button" data-v="large" aria-pressed="false">24 KL</button>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <div class="map" aria-label="Map of tankers near your address">
+        <svg id="map" viewBox="0 0 800 300" role="img" aria-labelledby="map-title">
+          <title id="map-title">Tankers around Velachery</title>
+          <rect width="800" height="300" fill="var(--map-bg)"/>
+          <g fill="var(--map-block)">
+            <rect x="20" y="20" width="150" height="80" rx="6"/><rect x="200" y="20" width="170" height="80" rx="6"/>
+            <rect x="400" y="20" width="120" height="80" rx="6"/><rect x="550" y="20" width="230" height="80" rx="6"/>
+            <rect x="20" y="130" width="150" height="70" rx="6"/><rect x="200" y="130" width="170" height="70" rx="6"/>
+            <rect x="400" y="130" width="120" height="70" rx="6"/><rect x="550" y="130" width="230" height="70" rx="6"/>
+            <rect x="20" y="230" width="150" height="55" rx="6"/><rect x="200" y="230" width="170" height="55" rx="6"/>
+            <rect x="400" y="230" width="120" height="55" rx="6"/><rect x="550" y="230" width="230" height="55" rx="6"/>
+          </g>
+          <g stroke="var(--map-road)" stroke-width="14" fill="none">
+            <path d="M0 115 H800"/><path d="M0 215 H800"/><path d="M185 0 V300"/><path d="M385 0 V300"/><path d="M535 0 V300"/>
+          </g>
+          <path d="M650 170 C700 170 720 245 790 250" stroke="var(--water)" stroke-opacity=".35" stroke-width="18" fill="none"/>
+          <text x="700" y="160" font-size="12" fill="var(--ink-soft)" font-family="Figtree, sans-serif">Velachery Lake</text>
+          <path id="route" d="" stroke="var(--water)" stroke-width="4" stroke-dasharray="8 6" fill="none"/>
+          <g id="markers"></g>
+          <g id="home" transform="translate(460 165)">
+            <circle r="20" fill="var(--water)" fill-opacity=".18"/>
+            <circle r="9" fill="var(--water)" stroke="var(--surface)" stroke-width="3"/>
+          </g>
+        </svg>
+        <div class="legend">
+          <span><i class="dot" style="background:var(--water)"></i>Your address</span>
+          <span><i class="dot" style="background:var(--yellow)"></i>Available tanker</span>
+          <span><i class="dot" style="background:var(--ink)"></i>Selected</span>
+        </div>
+      </div>
+
+      <section class="panel" aria-labelledby="list-title">
+        <div class="list-head">
+          <h2 id="list-title">Tankers near you</h2>
+          <span class="sort" id="count">Sorted by arrival time</span>
+        </div>
+        <ul class="tankers" id="list"></ul>
+      </section>
+    </div>
+
+    <aside class="panel summary" id="summary" aria-live="polite"></aside>
+  </div>
+
+  <section id="how" class="panel how" style="margin-top:20px" aria-label="How it works">
+    <div><span class="n">Step 1</span><h3>Choose a tanker</h3><p>See live owners near you with lorry number, capacity in litres, water source and fixed price before you book.</p></div>
+    <div><span class="n">Step 2</span><h3>Owner accepts in minutes</h3><p>The nearest owner confirms, fills at a licensed source and starts the trip. You see the driver and ETA.</p></div>
+    <div><span class="n">Step 3</span><h3>Share OTP at delivery</h3><p>Water is released into your sump only after you share the 4-digit OTP, so you pay for exactly what arrives.</p></div>
+  </section>
+
+  <section id="owners" class="owners" style="margin-top:20px">
+    <div>
+      <h2>Own a water tanker?</h2>
+      <p>List your lorries, set your per-trip price by capacity, and receive bookings from homes, apartments and construction sites in your area.</p>
+    </div>
+    <ul>
+      <li>Orders routed to the nearest free lorry</li>
+      <li>Weekly UPI settlement, no paperwork</li>
+      <li>Driver app with navigation and OTP check</li>
+    </ul>
+  </section>
+
+  <p class="demo-flag">Prototype with sample tankers, owners and prices. No real orders are placed.</p>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function () {
+  var HOME = { x: 460, y: 165 };
+  var TANKERS = [
+    { id: 1, owner: "Murugan Water Supply", plate: "TN 22 BK 4417", kl: 12, src: "treated", eta: 22, km: 3.1, rating: 4.8, trips: 1240, price: 1450, x: 300, y: 115 },
+    { id: 2, owner: "Sri Balaji Tankers", plate: "TN 09 CX 2081", kl: 6, src: "bore", eta: 15, km: 1.8, rating: 4.6, trips: 860, price: 750, x: 535, y: 60 },
+    { id: 3, owner: "Anna Aqua Movers", plate: "TN 07 AZ 9930", kl: 9, src: "treated", eta: 38, km: 5.6, rating: 4.9, trips: 2010, price: 1150, x: 90, y: 215 },
+    { id: 4, owner: "Lakshmi Transport", plate: "TN 11 H 6602", kl: 24, src: "bore", eta: 50, km: 7.4, rating: 4.5, trips: 540, price: 2600, x: 720, y: 115 },
+    { id: 5, owner: "Green Drop Mini", plate: "TN 22 DE 1175", kl: 3, src: "treated", eta: 12, km: 1.2, rating: 4.7, trips: 3120, price: 480, x: 385, y: 250 },
+    { id: 6, owner: "Kaveri Water Carriers", plate: "TN 14 R 3308", kl: 12, src: "bore", eta: 30, km: 4.3, rating: 4.4, trips: 690, price: 1250, x: 185, y: 40 }
+  ];
+  var PLATFORM_FEE = 29;
+  var state = { src: "all", cap: "all", selected: 1, order: null };
+
+  var $ = function (id) { return document.getElementById(id); };
+  var rupee = function (n) { return "₹" + n.toLocaleString("en-IN"); };
+  var litres = function (kl) { return (kl * 1000).toLocaleString("en-IN") + " L"; };
+  var srcLabel = function (s) { return s === "treated" ? "Treated / Metro" : "Borewell"; };
+
+  function capMatch(t) {
+    if (state.cap === "small") return t.kl <= 6;
+    if (state.cap === "mid") return t.kl >= 9 && t.kl <= 12;
+    if (state.cap === "large") return t.kl >= 24;
+    return true;
+  }
+  function visible() {
+    return TANKERS.filter(function (t) { return (state.src === "all" || t.src === state.src) && capMatch(t); })
+      .sort(function (a, b) { return a.eta - b.eta; });
+  }
+  function selected() { return TANKERS.filter(function (t) { return t.id === state.selected; })[0] || null; }
+  function distanceFee(t) { return Math.round(t.km * 12); }
+
+  function renderList() {
+    var rows = visible();
+    if (rows.length && !rows.some(function (t) { return t.id === state.selected; }) && !state.order) state.selected = rows[0].id;
+    $("count").textContent = rows.length + " available · sorted by arrival time";
+    $("list").innerHTML = rows.length ? rows.map(function (t) {
+      var sel = t.id === state.selected;
+      return '<li class="tanker' + (sel ? " selected" : "") + '">' +
+        '<div class="cap"><b>' + t.kl + '</b><small>KL</small></div>' +
+        '<div><div class="t-name">' + t.owner + '</div>' +
+        '<div class="t-meta"><span class="plate">' + t.plate + '</span>' +
+        '<span class="chip ' + (t.src === "treated" ? "treated" : "bore") + '">' + srcLabel(t.src) + '</span>' +
+        '<span class="num">' + t.rating.toFixed(1) + '★ · ' + t.trips.toLocaleString("en-IN") + ' trips</span>' +
+        '<span class="num">' + t.km.toFixed(1) + ' km away</span></div></div>' +
+        '<div class="t-right"><span class="price">' + rupee(t.price) + '</span>' +
+        '<span class="eta num">' + t.eta + ' min</span>' +
+        '<button type="button" class="pick" data-id="' + t.id + '"' + (state.order ? " disabled" : "") + '>' + (sel ? "Selected" : "Choose") + '</button></div>' +
+        '</li>';
+    }).join("") : '<li class="empty">No tanker matches these filters right now. Try another capacity or water source.</li>';
+  }
+
+  function renderMap() {
+    var rows = visible();
+    $("markers").innerHTML = rows.map(function (t) {
+      var sel = t.id === state.selected;
+      var fill = sel ? "var(--ink)" : "var(--yellow)";
+      var txt = sel ? "var(--surface)" : "var(--yellow-ink)";
+      return '<g class="mk" data-id="' + t.id + '" transform="translate(' + t.x + ' ' + t.y + ')" style="cursor:pointer">' +
+        '<rect x="-22" y="-13" width="44" height="26" rx="7" fill="' + fill + '" stroke="var(--surface)" stroke-width="2"/>' +
+        '<text y="4.5" text-anchor="middle" font-size="12" font-weight="700" font-family="Figtree, sans-serif" fill="' + txt + '">' + t.kl + ' KL</text></g>';
+    }).join("");
+    var s = selected();
+    $("route").setAttribute("d", s && rows.indexOf(s) > -1 ? routePath(s) : "");
+  }
+  function routePath(t) {
+    // L-shaped route along the road grid
+    var midX = [185, 385, 535].reduce(function (a, b) { return Math.abs(b - t.x) < Math.abs(a - t.x) ? b : a; });
+    return "M" + t.x + " " + t.y + " H" + midX + " V" + (t.y < HOME.y ? 115 : 215) + " H" + HOME.x + " V" + HOME.y;
+  }
+
+  function renderSummary() {
+    var el = $("summary");
+    if (state.order) return renderTracking(el);
+    var t = selected();
+    if (!t) { el.innerHTML = '<h2>Your order</h2><p class="note">Choose a tanker from the list to see the price breakdown.</p>'; return; }
+    var dist = distanceFee(t), total = t.price + dist + PLATFORM_FEE;
+    var whenTxt = $("when").options[$("when").selectedIndex].text;
+    el.innerHTML =
+      '<h2>Your order</h2>' +
+      '<div class="sel-card"><span class="label">Tanker</span>' +
+      '<strong>' + t.owner + '</strong>' +
+      '<span class="t-meta"><span class="plate">' + t.plate + '</span><span>' + litres(t.kl) + ' · ' + srcLabel(t.src) + '</span></span></div>' +
+      '<div class="lines num">' +
+      '<div><span>Water, ' + litres(t.kl) + '</span><span>' + rupee(t.price) + '</span></div>' +
+      '<div><span>Distance, ' + t.km.toFixed(1) + ' km</span><span>' + rupee(dist) + '</span></div>' +
+      '<div><span>Platform fee</span><span>' + rupee(PLATFORM_FEE) + '</span></div>' +
+      '<div class="total"><span>Total</span><span>' + rupee(total) + '</span></div></div>' +
+      '<div class="note">' + whenTxt + ' · arrives in about ' + t.eta + ' min · ' + $("pay").options[$("pay").selectedIndex].text + '</div>' +
+      '<button type="button" class="cta" id="place">Book ' + t.kl + ' KL tanker · ' + rupee(total) + '</button>' +
+      '<div class="note">Free cancellation until the owner starts filling.</div>';
+  }
+
+  var STEPS = [
+    ["Order placed", "Sent to nearby owners"],
+    ["Owner accepted", "Driver: Selvam R."],
+    ["Filling at source", "Licensed filling point"],
+    ["On the way", "Following the route on the map"],
+    ["Delivered", "Share the OTP with the driver"]
+  ];
+  function renderTracking(el) {
+    var o = state.order, t = o.tanker;
+    var mins = Math.max(0, t.eta - o.step * Math.round(t.eta / 4));
+    el.innerHTML =
+      '<div class="track"><div><span class="label">Order <span class="mono">' + o.id + '</span></span>' +
+      '<h2>' + (o.step >= 4 ? "Water delivered" : "Arriving in " + mins + " min") + '</h2></div>' +
+      '<div class="otp"><div><span class="label">Delivery OTP</span><div class="note">Share only when the lorry is at your gate</div></div><b>' + o.otp + '</b></div>' +
+      '<ol class="steps">' + STEPS.map(function (s, i) {
+        var cls = i < o.step || o.step === 4 ? "done" : i === o.step ? "now" : "";
+        return '<li class="' + cls + '"><span class="mark"></span><div>' + s[0] + '<small>' + s[1] + '</small></div></li>';
+      }).join("") + '</ol>' +
+      '<div class="sel-card"><strong>' + t.owner + '</strong><span class="t-meta"><span class="plate">' + t.plate + '</span><span>' + litres(t.kl) + ' · ' + rupee(o.total) + '</span></span></div>' +
+      '<button type="button" class="ghost" id="reset">' + (o.step >= 4 ? "Book another tanker" : "Cancel order") + '</button></div>';
+  }
+
+  function toast(msg) {
+    var t = $("toast"); t.textContent = msg; t.hidden = false;
+    clearTimeout(toast._t); toast._t = setTimeout(function () { t.hidden = true; }, 2600);
+  }
+
+  function renderAll() { renderList(); renderMap(); renderSummary(); }
+
+  document.querySelectorAll(".seg").forEach(function (g) {
+    g.addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b || state.order) return;
+      g.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      state[g.dataset.filter] = b.dataset.v; renderAll();
+    });
+  });
+  $("list").addEventListener("click", function (e) {
+    var b = e.target.closest(".pick"); if (!b || state.order) return;
+    state.selected = +b.dataset.id; renderAll();
+  });
+  $("markers").addEventListener("click", function (e) {
+    var g = e.target.closest(".mk"); if (!g || state.order) return;
+    state.selected = +g.dataset.id; renderAll();
+  });
+  $("when").addEventListener("change", renderSummary);
+  $("pay").addEventListener("change", renderSummary);
+  $("builder").addEventListener("submit", function (e) { e.preventDefault(); });
+
+  $("summary").addEventListener("click", function (e) {
+    if (e.target.id === "place") {
+      var t = selected();
+      state.order = {
+        id: "NN-" + (48000 + Math.floor(Math.random() * 1999)),
+        otp: String(1000 + Math.floor(Math.random() * 9000)),
+        tanker: t, step: 0, total: t.price + distanceFee(t) + PLATFORM_FEE
+      };
+      toast("Booked. " + t.owner + " is confirming your order.");
+      renderAll();
+      clearInterval(state.timer);
+      state.timer = setInterval(function () {
+        state.order.step++;
+        if (state.order.step >= 4) { state.order.step = 4; clearInterval(state.timer); toast("Delivered. Thank you for using NeerNow."); }
+        renderSummary();
+      }, 3500);
+    }
+    if (e.target.id === "reset") {
+      var cancelled = state.order.step < 4;
+      clearInterval(state.timer); state.order = null; renderAll();
+      if (cancelled) toast("Order cancelled. No charge applied.");
+    }
+  });
+
+  renderAll();
+})();
+</script>
