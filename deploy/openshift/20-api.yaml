@@ -47,6 +47,7 @@ spec:
           envFrom:
             - configMapRef: { name: neernow-config }
             - secretRef: { name: neernow-sms, optional: true }
+            - secretRef: { name: neernow-maps, optional: true }
           startupProbe:
             httpGet: { path: /healthz, port: http }
             periodSeconds: 2

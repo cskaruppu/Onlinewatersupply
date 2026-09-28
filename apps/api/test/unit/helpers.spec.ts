@@ -79,8 +79,9 @@ describe('loadConfig', () => {
   });
 
   it('blocks console SMS in production unless explicitly allowed', () => {
-    expect(() => loadConfig({ ...baseEnv, NODE_ENV: 'production' })).toThrow(/blocked in production/);
-    expect(loadConfig({ ...baseEnv, NODE_ENV: 'production', ALLOW_CONSOLE_SMS: 'true' }).smsProvider).toBe('console');
+    const prod = { ...baseEnv, NODE_ENV: 'production', ALLOW_ESTIMATED_DISTANCE: 'true' };
+    expect(() => loadConfig(prod)).toThrow(/blocked in production/);
+    expect(loadConfig({ ...prod, ALLOW_CONSOLE_SMS: 'true' }).smsProvider).toBe('console');
   });
 
   it('requires MSG91 credentials when MSG91 is selected', () => {
@@ -88,7 +89,7 @@ describe('loadConfig', () => {
   });
 
   it('uses secure cookies in production by default', () => {
-    expect(loadConfig({ ...baseEnv, NODE_ENV: 'production', ALLOW_CONSOLE_SMS: 'true' }).cookieSecure).toBe(true);
+    expect(loadConfig({ ...baseEnv, NODE_ENV: 'production', ALLOW_CONSOLE_SMS: 'true', ALLOW_ESTIMATED_DISTANCE: 'true' }).cookieSecure).toBe(true);
     expect(loadConfig(baseEnv).cookieSecure).toBe(false);
   });
 });

@@ -16,6 +16,7 @@ COPY --from=build --chown=1001:0 /opt/app-root/src/node_modules ./node_modules
 COPY --from=build --chown=1001:0 /opt/app-root/src/dist ./dist
 COPY --chown=1001:0 package.json ./
 COPY --chown=1001:0 migrations ./migrations
+COPY --chown=1001:0 seeds ./seeds
 USER 1001
 EXPOSE 3001
 CMD ["node", "dist/main.js"]

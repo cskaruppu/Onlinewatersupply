@@ -15,7 +15,7 @@ OC=(oc -n "$PROJECT")
 
 if [[ "$ALL" == "--all" ]]; then
   "${OC[@]}" delete pvc neernow-postgres-data --ignore-not-found
-  "${OC[@]}" delete secret neernow-secrets neernow-sms --ignore-not-found
+  "${OC[@]}" delete secret neernow-secrets neernow-sms neernow-maps --ignore-not-found
   echo "Removed NeerNow and its data from $PROJECT."
 else
   echo "Removed NeerNow workloads from $PROJECT. Kept: database volume neernow-postgres-data and secrets."

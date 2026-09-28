@@ -103,7 +103,7 @@ Customers are **not** charged per kilometre. Coimbatore routes change with traff
 6. **Keeping owners whole.** Owners are paid the band price minus commission. For assignments far longer than the band suggests, NeerNow pays a **long-trip bonus** so owners don't refuse far orders.
 7. **Monthly review.** GPS records the real kilometres of every trip. Each month operations compares them per zone and band, then moves addresses between bands, adds filling points, or adjusts prices where owners are losing money.
 
-The database design, rate card endpoint (`GET /api/v1/pricing/rate-card`) and pricing rules are implemented in `apps/api` (`migrations/002_pricing.sql`, `src/pricing/`). The band and hill-road flag are always read from the saved address on the server, never from what the customer's app sends.
+Saving addresses (with the one-time road distance check), quotes and booking are implemented too; see the README. The database design, rate card endpoint (`GET /api/v1/pricing/rate-card`) and pricing rules are implemented in `apps/api` (`migrations/002_pricing.sql`, `src/pricing/`). The band and hill-road flag are always read from the saved address on the server, never from what the customer's app sends.
 
 ## GPS tracking design
 

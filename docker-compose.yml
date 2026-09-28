@@ -54,6 +54,10 @@ services:
       COOKIE_SECURE: "false"
       SMS_PROVIDER: console
       ALLOW_CONSOLE_SMS: "true"
+      # No maps key locally: estimate road distance and load sample filling points.
+      DISTANCE_PROVIDER: estimate
+      ALLOW_ESTIMATED_DISTANCE: "true"
+      SEED_DEMO_DATA: "true"
     depends_on:
       postgres: { condition: service_healthy }
       redis: { condition: service_healthy }

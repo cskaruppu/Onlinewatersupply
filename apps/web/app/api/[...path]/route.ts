@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 
 const API = process.env.API_INTERNAL_URL ?? 'http://localhost:3001';
 const SEGMENT = /^[A-Za-z0-9._-]+$/;
-const FORWARD_REQUEST_HEADERS = ['content-type', 'cookie', 'user-agent', 'origin', 'authorization', 'accept', 'x-forwarded-for'];
+const FORWARD_REQUEST_HEADERS = ['content-type', 'cookie', 'user-agent', 'origin', 'authorization', 'accept', 'x-forwarded-for', 'idempotency-key'];
 const FORWARD_RESPONSE_HEADERS = ['content-type', 'retry-after', 'cache-control'];
 
 async function proxy(req: NextRequest, ctx: { params: Promise<{ path: string[] }> }) {

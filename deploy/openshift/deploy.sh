@@ -7,6 +7,8 @@
 #
 # Optional environment variables:
 #   MSG91_AUTH_KEY, MSG91_TEMPLATE_ID  send real SMS through MSG91 (otherwise codes are written to the API log)
+#   GOOGLE_MAPS_API_KEY                real road distances (Routes API); otherwise distances are estimated and
+#                                      sample filling points are loaded (test environments only)
 #   ROUTE_HOST                         custom hostname, e.g. app.neernow.in (DNS must point to the cluster router)
 #   API_IMAGE, WEB_IMAGE               use images you built and pushed yourself instead of building in the cluster
 #   SKIP_SMOKE_TEST=1                  do not run the smoke test at the end
@@ -64,6 +66,18 @@ else
 fi
 echo "    SMS provider: $SMS_PROVIDER"
 
+if [[ -n "${GOOGLE_MAPS_API_KEY:-}" ]]; then
+  "${OC[@]}" create secret generic neernow-maps --from-literal=GOOGLE_MAPS_API_KEY="$GOOGLE_MAPS_API_KEY" \
+    --dry-run=client -o yaml | "${OC[@]}" apply -f - >/dev/null
+  DISTANCE_PROVIDER=google
+elif "${OC[@]}" get secret neernow-maps >/dev/null 2>&1; then
+  DISTANCE_PROVIDER=google
+else
+  DISTANCE_PROVIDER=estimate
+  warn "No GOOGLE_MAPS_API_KEY: road distances are estimated and SAMPLE filling points are loaded. Use this for testing only."
+fi
+echo "    Distance provider: $DISTANCE_PROVIDER"
+
 say "Public route"
 "${OC[@]}" apply -f "$HERE/31-route.yaml" >/dev/null
 if [[ -n "${ROUTE_HOST:-}" ]]; then
@@ -82,6 +96,9 @@ say "Configuration"
   --from-literal=TRUST_PROXY=1 \
   --from-literal=SMS_PROVIDER="$SMS_PROVIDER" \
   --from-literal=ALLOW_CONSOLE_SMS="$([[ $SMS_PROVIDER == console ]] && echo true || echo false)" \
+  --from-literal=DISTANCE_PROVIDER="$DISTANCE_PROVIDER" \
+  --from-literal=ALLOW_ESTIMATED_DISTANCE="$([[ $DISTANCE_PROVIDER == estimate ]] && echo true || echo false)" \
+  --from-literal=SEED_DEMO_DATA="$([[ $DISTANCE_PROVIDER == estimate ]] && echo true || echo false)" \
   --dry-run=client -o yaml | "${OC[@]}" apply -f - >/dev/null
 "${OC[@]}" label configmap neernow-config app.kubernetes.io/part-of=neernow --overwrite >/dev/null
 echo "    neernow-config updated"

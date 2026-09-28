@@ -35,6 +35,8 @@ export interface QuoteInput {
   band: BandCode;
   /** From the saved address. */
   hillRoad: boolean;
+  /** Early-morning delivery slot: adds the night charge. Set by the server from the chosen slot. */
+  earlyMorning?: boolean;
   /** Customer-chosen extras, e.g. overhead_pumping. */
   addOns: string[];
   /** 15-minute blocks the driver waited beyond the free 15 minutes (added after delivery). */
@@ -84,13 +86,14 @@ export function computeQuote(
   }
 
   const lines: QuoteLine[] = [
-    { code: 'water', label: `Water, ${input.capacityKl * 1000} L (band ${input.band})`, amountPaise: rate.pricePaise },
+    { code: 'water', label: `Water, ${(input.capacityKl * 1000).toLocaleString('en-IN')} L (band ${input.band})`, amountPaise: rate.pricePaise },
   ];
   const add = (code: string, times = 1) => {
     const a = byCode.get(code);
     if (a && times > 0) lines.push({ code, label: a.label, amountPaise: a.pricePaise * times });
   };
   if (input.hillRoad) add('hill_road');
+  if (input.earlyMorning) add('night_slot');
   chosen.forEach((code) => add(code));
   if (input.waitingBlocks) {
     if (!Number.isInteger(input.waitingBlocks) || input.waitingBlocks < 0) throw new PricingError('Waiting time must be whole 15-minute blocks.');

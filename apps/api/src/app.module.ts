@@ -15,6 +15,9 @@ import { SessionGuard } from './auth/auth.guard';
 import { AuthController, MeController } from './auth/auth.controller';
 import { HealthController } from './health/health.controller';
 import { PricingController, PricingService } from './pricing/pricing.service';
+import { distanceProvider } from './geo/distance.service';
+import { AddressesController, AddressesService, LocalitiesController } from './addresses/addresses';
+import { OrdersController, OrdersService } from './orders/orders';
 
 const configProvider = { provide: AppConfig, useFactory: () => loadConfig(process.env) };
 
@@ -28,7 +31,10 @@ const configProvider = { provide: AppConfig, useFactory: () => loadConfig(proces
     // General per-IP limit for every endpoint; OTP endpoints add stricter limits of their own.
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 120 }]),
   ],
-  controllers: [AuthController, MeController, HealthController, PricingController],
+  controllers: [
+    AuthController, MeController, HealthController, PricingController,
+    LocalitiesController, AddressesController, OrdersController,
+  ],
   providers: [
     configProvider,
     CryptoService,
@@ -41,6 +47,9 @@ const configProvider = { provide: AppConfig, useFactory: () => loadConfig(proces
     TokensService,
     SessionGuard,
     PricingService,
+    distanceProvider,
+    AddressesService,
+    OrdersService,
     { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
 })

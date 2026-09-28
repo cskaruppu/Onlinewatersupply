@@ -1,9 +1,11 @@
 'use client';
 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { api, PublicUser } from '@/lib/api';
-import { Brand } from '../brand';
+import { useRequireUser } from '@/lib/session';
+import { AppHeader } from '../app-header';
 
 const ROLE_LABEL: Record<PublicUser['role'], string> = {
   customer: 'Customer',
@@ -23,16 +25,8 @@ function formatDate(iso: string | null, withTime = true) {
 
 export default function AccountPage() {
   const router = useRouter();
-  const [user, setUser] = useState<PublicUser | null>(null);
-  const [error, setError] = useState('');
+  const { user, error } = useRequireUser();
   const [signingOut, setSigningOut] = useState(false);
-
-  useEffect(() => {
-    api
-      .me()
-      .then((u) => (u ? setUser(u) : router.replace('/login')))
-      .catch(() => setError('Could not load your account. Please refresh the page.'));
-  }, [router]);
 
   async function signOut() {
     setSigningOut(true);
@@ -44,8 +38,8 @@ export default function AccountPage() {
   }
 
   return (
-    <main className="shell">
-      <Brand />
+    <main className="page narrow">
+      <AppHeader />
       <section className="card" aria-labelledby="title" aria-busy={!user && !error}>
         {error && <p className="msg error" role="alert">{error}</p>}
         {!user && !error && <p className="lead">Loading your account…</p>}
@@ -54,7 +48,7 @@ export default function AccountPage() {
             <div style={{ display: 'grid', gap: 6 }}>
               <span className="pill">Signed in securely</span>
               <h1 id="title">Vanakkam! You&apos;re signed in.</h1>
-              <p className="lead">Tanker booking opens here next.</p>
+              <Link className="btn primary" href="/book">Book a water tanker</Link>
             </div>
             <dl className="facts">
               <div><dt>Mobile</dt><dd>{user.phoneMasked}</dd></div>

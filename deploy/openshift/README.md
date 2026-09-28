@@ -40,6 +40,23 @@ SMOKE_PHONE=98xxxxxxxx scripts/smoke-test.sh https://<your-route-host> prompt   
 
 Log-based OTP (`SMS_PROVIDER=console`) is only for testing. The API refuses to start with it in production unless `ALLOW_CONSOLE_SMS=true`, which the script sets only when no MSG91 credentials exist.
 
+### Real road distances with Google Maps
+
+Without a key, test deployments estimate road distance and load **sample** filling points. For real distances, create a Google Cloud API key with the **Routes API** enabled. Restrict the key to that API, and to your cluster's egress IPs if you can. Then:
+
+```bash
+GOOGLE_MAPS_API_KEY=xxxx deploy/openshift/deploy.sh neernow
+```
+
+With a key, sample filling points are not loaded. Add your licensed filling points before customers save addresses:
+
+```bash
+oc -n neernow exec -i deployment/neernow-postgres -- psql -U neernow -d neernow <<'SQL'
+INSERT INTO filling_points (zone_id, name, source, lat, lng, licence_no)
+SELECT id, 'Kongu RO plant, Saravanampatti', 'treated', 11.0801, 77.0012, 'TN/CBE/1234' FROM zones WHERE code = 'north-east';
+SQL
+```
+
 ### Your own domain
 
 ```bash
@@ -54,6 +71,7 @@ Point a DNS CNAME for `app.neernow.in` at your cluster's router hostname. For a 
 |---|---|
 | `neernow-secrets` | Generated once: database and Redis passwords, JWT key, hashing key, AES-256 encryption key. **Back it up.** Without `DATA_ENCRYPTION_KEY`, stored phone numbers can't be read. |
 | `neernow-sms` | Optional MSG91 credentials |
+| `neernow-maps` | Optional Google Maps API key |
 | `neernow-config` | Allowed origin (the route URL), secure cookies, SMS provider |
 | `neernow-postgres` | PostgreSQL 16, 5 Gi persistent volume, 1 pod |
 | `neernow-redis` | Redis 7 for OTP hashes and rate limits (short-lived data, no volume) |

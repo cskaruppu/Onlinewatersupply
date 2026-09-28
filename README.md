@@ -4,12 +4,12 @@ A platform, launching first in Coimbatore, that connects households, apartments 
 
 ## What's built so far
 
-**Phone OTP login**, working end to end:
+**Phone OTP login, saved addresses and tanker booking**, working end to end:
 
 | Part | Folder | Technology |
 |---|---|---|
 | API | `apps/api` | NestJS (Node.js 22, TypeScript), PostgreSQL 16, Redis 7 |
-| Web app | `apps/web` | Next.js 15 (React 19): login and account pages |
+| Web app | `apps/web` | Next.js 15 (React 19): login, addresses, booking, orders, account |
 | Containers | `apps/*/Dockerfile` | Red Hat UBI 9 Node.js 22, non-root, OpenShift-ready |
 | OpenShift | `deploy/openshift` | Manifests + one-command deploy script |
 | Local stack | `docker-compose.yml` | PostgreSQL, Redis, API, web |
@@ -32,6 +32,26 @@ A platform, launching first in Coimbatore, that connects households, apartments 
    - a per-IP request limit
    - an audit trail of every sign-in event
 
+### Addresses and booking
+
+1. The customer saves an address: a label, house and street, an area picked from 20 Coimbatore localities, and a pincode. They can also tap **Use my current location** to pin their exact gate.
+2. The API measures the **road** distance to the nearest active filling point once:
+   - it shortlists the 3 nearest by straight line
+   - it asks the maps service for road distances in one call
+   - it stores the zone, filling point, distance and band (A/B/C)
+
+   Addresses outside Coimbatore are refused; ones beyond 15 km are saved as "outside delivery area" and can't be booked. The street address is stored encrypted.
+3. The booking screen shows the prices for that address's band. The customer picks:
+   - tanker size (3–24 KL)
+   - time (as soon as possible, this evening, or early tomorrow, which adds the early-morning charge automatically)
+   - extras (pumping, long hose)
+   - payment (cash on delivery for now; UPI is coming soon)
+
+   The price comes from the server, which reads the band from the saved address and never from the browser.
+4. Booking freezes the price on the order. Each attempt carries an `Idempotency-Key`, so a double tap or a retry never creates two orders. Each customer can have at most 3 open orders, and can cancel free of charge until an owner accepts.
+
+Road distances come from the Google Maps **Routes API** when `GOOGLE_MAPS_API_KEY` is set. Without a key (local and test environments), distance is estimated as straight line × 1.35 and marked "estimated". This mode refuses to start in production unless `ALLOW_ESTIMATED_DISTANCE=true`.
+
 ### Pricing
 
 Prices are fixed per address: capacity × distance band (A up to 5 km, B 5–10 km, C 10–15 km of road from the nearest filling point), plus any add-ons and the platform fee. There are no per-km charges. The zones, filling points, bands, rate card with caps, add-ons and saved-address tables are in `apps/api/migrations/002_pricing.sql`, and the rules are in `apps/api/src/pricing/`. See the pricing section of `docs/platform-features.md` for the reasoning.
@@ -44,7 +64,7 @@ You need Docker (with Compose) and curl.
 scripts/local-up.sh
 ```
 
-This builds and starts everything, then runs the smoke test. Open **http://localhost:3000** and sign in with any Indian mobile number. Read the code from the API log (no real SMS is sent locally):
+This builds and starts everything, then runs the smoke test. Open **http://localhost:3000** and sign in with any Indian mobile number. You'll land on the booking screen, which asks for a delivery address first. Locally, distances are estimated from 5 sample filling points. Read the code from the API log (no real SMS is sent locally):
 
 ```bash
 docker compose logs -f api | grep DEV-SMS
@@ -93,6 +113,11 @@ See [`deploy/openshift/README.md`](deploy/openshift/README.md) for real SMS, cus
 | `OTP_RESEND_SECONDS`, `OTP_PER_PHONE_LIMIT`, `OTP_PER_IP_LIMIT` | 30 / 3 per 10 min / 10 per hour | Rate limits |
 | `ACCESS_TOKEN_TTL_SECONDS`, `REFRESH_TOKEN_TTL_DAYS` | 900 / 30 | Session lengths |
 | `PLATFORM_FEE_PAISE` | 2900 | Platform fee per order (₹29) |
+| `DISTANCE_PROVIDER` | `estimate` | `google` (Routes API) or `estimate` (testing only) |
+| `GOOGLE_MAPS_API_KEY` | — | Needed when `DISTANCE_PROVIDER=google`; enable the Routes API on the key |
+| `ALLOW_ESTIMATED_DISTANCE` | `false` | Lets `estimate` run with `NODE_ENV=production` (test environments) |
+| `SEED_DEMO_DATA` | `false` | Loads sample filling points from `apps/api/seeds` (never in production) |
+| `MAX_ADDRESSES_PER_USER`, `ADDRESS_CHECKS_PER_HOUR`, `MAX_ACTIVE_ORDERS_PER_USER` | 5 / 20 / 3 | Per-customer limits |
 
 The web app needs only `API_INTERNAL_URL` (default `http://localhost:3001`).
 
@@ -106,6 +131,11 @@ The web app needs only `API_INTERNAL_URL` (default `http://localhost:3001`).
 | `POST /api/v1/auth/logout` | End the session |
 | `GET /api/v1/me` | Signed-in user (masked phone, role) |
 | `GET /api/v1/pricing/rate-card` | Public price list by capacity and distance band, add-ons, platform fee |
+| `GET /api/v1/localities` | Coimbatore areas with pincodes, for the address form |
+| `GET /api/v1/addresses`, `POST /api/v1/addresses`, `DELETE /api/v1/addresses/:id` | The customer's saved addresses (band worked out on save) |
+| `POST /api/v1/orders/quote` `{ addressId, capacityKl, slot, addOns }` | Price for an order, from the saved address |
+| `POST /api/v1/orders` (+ `Idempotency-Key` header) | Book a tanker at the quoted price |
+| `GET /api/v1/orders`, `GET /api/v1/orders/:id`, `POST /api/v1/orders/:id/cancel` | The customer's orders; cancel before acceptance |
 | `GET /healthz`, `GET /readyz` | Liveness and readiness (database + Redis) |
 
 ## Product design

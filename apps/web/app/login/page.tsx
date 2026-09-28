@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { FormEvent, useEffect, useRef, useState } from 'react';
-import { api, ApiError } from '@/lib/api';
+import { api, ApiError, safeNext } from '@/lib/api';
 import { Brand } from '../brand';
 
 type Step = 'phone' | 'code';
@@ -19,9 +19,12 @@ export default function LoginPage() {
   const [info, setInfo] = useState('');
   const otpRef = useRef<HTMLInputElement>(null);
 
-  // Already signed in? Go straight to the account page.
+  // Where to go after signing in: the page that sent the visitor here, or booking.
+  const destination = () => safeNext(new URLSearchParams(window.location.search).get('next')) ?? '/book';
+
+  // Already signed in? Go straight on.
   useEffect(() => {
-    api.me().then((u) => u && router.replace('/account')).catch(() => undefined);
+    api.me().then((u) => u && router.replace(destination())).catch(() => undefined);
   }, [router]);
 
   useEffect(() => {
@@ -68,7 +71,7 @@ export default function LoginPage() {
     setInfo('');
     try {
       await api.verifyOtp(digits, otp);
-      router.replace('/account');
+      router.replace(destination());
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Could not reach NeerNow. Check your connection and try again.');
       setOtp('');

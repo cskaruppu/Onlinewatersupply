@@ -23,13 +23,15 @@ JAR="$(mktemp)"; trap 'rm -f "$JAR"' EXIT
 CURL=(curl -sS --max-time 20 -c "$JAR" -b "$JAR")
 [[ "${INSECURE:-0}" == "1" ]] && CURL+=(-k)
 PASS=0; FAIL=0
+EXTRA_HEADERS=()
+json_str() { grep -o "\"$1\":\"[^\"]*\"" <<<"$BODY" | head -1 | cut -d'"' -f4 || true; }
 
 ok()   { echo "  PASS  $1"; PASS=$((PASS + 1)); }
 bad()  { echo "  FAIL  $1"; FAIL=$((FAIL + 1)); }
 # status <method> <path> [json-body] [origin]  -> prints HTTP status, body saved in $BODY
 status() {
-  local method="$1" path="$2" data="${3:-}" origin="${4:-$BASE}" args=()
-  [[ -n "$data" ]] && args=(-H 'Content-Type: application/json' --data "$data")
+  local method="$1" path="$2" data="${3:-}" origin="${4:-$BASE}" args=("${EXTRA_HEADERS[@]}")
+  [[ -n "$data" ]] && args+=(-H 'Content-Type: application/json' --data "$data")
   BODY="$("${CURL[@]}" -X "$method" -H "Origin: $origin" "${args[@]}" -w '\n%{http_code}' "$BASE$path")"
   CODE="${BODY##*$'\n'}"; BODY="${BODY%$'\n'*}"
 }
@@ -78,6 +80,29 @@ else
   status POST /api/v1/auth/otp/verify "{\"phone\":\"$PHONE\",\"otp\":\"$OTP\"}";   expect 400 "code cannot be reused"
   status GET /api/v1/me;                          expect 200 "signed-in profile loads"
   grep -q '"phoneMasked":"+91 ' <<<"$BODY" && ! grep -q "$PHONE" <<<"$BODY" && ok "phone number is masked" || bad "phone not masked: $BODY"
+
+  # Booking: address -> band -> quote -> order (double tap) -> cancel.
+  status GET /api/v1/localities;                  expect 200 "localities load"
+  LOC_ID="$(grep -o '"id":[0-9]*,"name":"Saravanampatti"' <<<"$BODY" | grep -o '[0-9]*' | head -1 || true)"
+  status POST /api/v1/addresses "{\"label\":\"Home\",\"line1\":\"1, Smoke Test Street\",\"localityId\":${LOC_ID:-0},\"pincode\":\"641035\"}"
+  expect 201 "address saved"
+  ADDRESS_ID="$(json_str id)"
+  grep -q '"band":"A"' <<<"$BODY" && ok "address priced in band A" || bad "unexpected band: ${BODY:0:200}"
+  QUOTE_BODY="{\"addressId\":\"$ADDRESS_ID\",\"capacityKl\":12,\"slot\":\"asap\"}"
+  ORDER_BODY="${QUOTE_BODY%\}},\"paymentMethod\":\"cash\"}"
+  status POST /api/v1/orders/quote "$QUOTE_BODY";  expect 200 "price quoted"
+  QUOTED="$(grep -o '"totalPaise":[0-9]*' <<<"$BODY" | head -1 || true)"
+  KEY="smoke-$(date +%s)-$RANDOM"
+  EXTRA_HEADERS=(-H "Idempotency-Key: $KEY")
+  status POST /api/v1/orders "$ORDER_BODY";        expect 201 "tanker booked"
+  ORDER_ID="$(json_str id)"
+  grep -q "$QUOTED" <<<"$BODY" && ok "booked at the quoted price" || bad "price differs from quote: ${BODY:0:200}"
+  status POST /api/v1/orders "$ORDER_BODY";        expect 201 "double tap returns the same order"
+  [[ "$(json_str id)" == "$ORDER_ID" ]] && ok "no duplicate order" || bad "duplicate order created"
+  EXTRA_HEADERS=()
+  status POST "/api/v1/orders/$ORDER_ID/cancel" '{}'; expect 200 "order cancelled"
+  status DELETE "/api/v1/addresses/$ADDRESS_ID" '{}'; expect 204 "address removed"
+
   status POST /api/v1/auth/refresh '{}';          expect 200 "session refresh rotates tokens"
   status POST /api/v1/auth/logout '{}';           expect 204 "sign out"
   status GET /api/v1/me;                          expect 401 "signed out session is refused"

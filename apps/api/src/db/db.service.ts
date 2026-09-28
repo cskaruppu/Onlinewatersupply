@@ -25,6 +25,16 @@ export class DbService implements OnModuleInit, OnModuleDestroy {
 
   async onModuleInit() {
     await this.migrate();
+    if (this.config.seedDemoData) await this.seedDemoData();
+  }
+
+  /** Loads sample data (e.g. demo filling points) for development and test environments. Safe to re-run. */
+  async seedDemoData() {
+    const files = (await fs.readdir(this.config.seedsDir).catch(() => [] as string[])).filter((f) => f.endsWith('.sql')).sort();
+    for (const file of files) {
+      await this.pool.query(await fs.readFile(path.join(this.config.seedsDir, file), 'utf8'));
+      this.logger.warn(`Loaded demo data from ${file} (SEED_DEMO_DATA=true; not for production)`);
+    }
   }
 
   async onModuleDestroy() {

@@ -1,6 +1,7 @@
 import * as path from 'path';
 
 export type SmsProvider = 'console' | 'msg91';
+export type DistanceProvider = 'estimate' | 'google';
 
 /**
  * All runtime settings, read once from environment variables at startup.
@@ -13,6 +14,8 @@ export class AppConfig {
   databaseSsl!: boolean;
   redisUrl!: string;
   migrationsDir!: string;
+  seedsDir!: string;
+  seedDemoData!: boolean;
 
   jwtSecret!: string;
   hashKey!: string;
@@ -37,6 +40,12 @@ export class AppConfig {
   otpPerIpWindowSeconds!: number;
 
   platformFeePaise!: number;
+
+  distanceProvider!: DistanceProvider;
+  googleMapsApiKey?: string;
+  maxAddressesPerUser!: number;
+  addressChecksPerHour!: number;
+  maxActiveOrdersPerUser!: number;
 
   accessTtlSeconds!: number;
   refreshTtlDays!: number;
@@ -72,6 +81,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
   c.databaseSsl = bool(env, 'DATABASE_SSL', false);
   c.redisUrl = required(env, 'REDIS_URL');
   c.migrationsDir = env.MIGRATIONS_DIR ?? path.resolve(process.cwd(), 'migrations');
+  c.seedsDir = env.SEEDS_DIR ?? path.resolve(process.cwd(), 'seeds');
+  c.seedDemoData = bool(env, 'SEED_DEMO_DATA', false);
 
   c.jwtSecret = required(env, 'JWT_SECRET');
   if (c.jwtSecret.length < 32) throw new Error('JWT_SECRET must be at least 32 characters');
@@ -115,6 +126,20 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
   c.otpPerIpWindowSeconds = int(env, 'OTP_PER_IP_WINDOW_SECONDS', 3600);
 
   c.platformFeePaise = int(env, 'PLATFORM_FEE_PAISE', 2900);
+
+  const distance = (env.DISTANCE_PROVIDER ?? 'estimate') as DistanceProvider;
+  if (!['estimate', 'google'].includes(distance)) throw new Error('DISTANCE_PROVIDER must be estimate or google');
+  c.distanceProvider = distance;
+  if (distance === 'google') c.googleMapsApiKey = required(env, 'GOOGLE_MAPS_API_KEY');
+  if (distance === 'estimate' && prod && !bool(env, 'ALLOW_ESTIMATED_DISTANCE', false)) {
+    throw new Error(
+      'DISTANCE_PROVIDER=estimate guesses road distance from a straight line and is blocked in production. ' +
+        'Configure google, or set ALLOW_ESTIMATED_DISTANCE=true for a test environment only.',
+    );
+  }
+  c.maxAddressesPerUser = int(env, 'MAX_ADDRESSES_PER_USER', 5);
+  c.addressChecksPerHour = int(env, 'ADDRESS_CHECKS_PER_HOUR', 20);
+  c.maxActiveOrdersPerUser = int(env, 'MAX_ACTIVE_ORDERS_PER_USER', 3);
 
   c.accessTtlSeconds = int(env, 'ACCESS_TOKEN_TTL_SECONDS', 900);
   c.refreshTtlDays = int(env, 'REFRESH_TOKEN_TTL_DAYS', 30);
