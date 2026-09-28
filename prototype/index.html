@@ -270,8 +270,9 @@
             <div class="field">
               <label class="label" for="addr">Delivery address</label>
               <select id="addr">
-                <option>Home · 22, Kurinji Nagar, Sathy Road, Saravanampatti 641035</option>
-                <option>Site · Plot 7, Keeranatham IT Park Rd, Coimbatore 641035</option>
+                <option value="home">Home · 22, Kurinji Nagar, Sathy Road, Saravanampatti 641035</option>
+                <option value="site">Site · Plot 7, Keeranatham IT Park Rd, Coimbatore 641035</option>
+                <option value="parents">Parents · 5, Bharathi Park Rd, Vadavalli 641041</option>
               </select>
             </div>
             <div class="field">
@@ -339,7 +340,7 @@
       <div><div class="ic"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 1 2 3.5v4C2 11 4.6 14 8 15c3.4-1 6-4 6-7.5v-4Z" fill="currentColor"/></svg></div><h3>Verified owners</h3><p>RC book, licence, insurance and a water test report are checked before a lorry goes live.</p></div>
       <div><div class="ic"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="7" r="3" fill="currentColor"/><path d="M8 15s5-4.5 5-8A5 5 0 0 0 3 7c0 3.5 5 8 5 8Z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></div><h3>Live GPS tracking</h3><p>Every trip is tracked from the filling point to your gate. Route changes and stops are flagged.</p></div>
       <div><div class="ic"><svg width="16" height="16" viewBox="0 0 16 16"><rect x="3" y="7" width="10" height="8" rx="2" fill="currentColor"/><path d="M5 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></div><h3>OTP and sealed valve</h3><p>The valve seal number is logged at filling. Water is released only after you share the OTP.</p></div>
-      <div><div class="ic"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M2 12h12M4 12V7m4 5V4m4 8V8" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg></div><h3>Pay for what arrives</h3><p>The flow meter reading and a delivery photo come with every bill. UPI is released only after delivery.</p></div>
+      <div><div class="ic"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M2 12h12M4 12V7m4 5V4m4 8V8" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg></div><h3>One fixed price</h3><p>Priced by your area, not the route. The flow meter reading and a photo come with every bill, and UPI is released only after delivery.</p></div>
     </section>
   </section>
 
@@ -385,7 +386,7 @@
     </div>
 
     <section class="panel" aria-labelledby="price-title">
-      <div class="panel-head"><h2 id="price-title">Your price card</h2><span class="soft" style="font-size:13px">Zone cap set by NeerNow keeps prices fair in summer</span></div>
+      <div class="panel-head"><h2 id="price-title">Your price card</h2><span class="soft" style="font-size:13px">You set Band A (up to 5 km). Bands B and C add NeerNow's fixed distance charge, paid to you in full.</span></div>
       <div class="price-grid" id="price-grid"></div>
       <div style="padding:0 18px 18px" class="actions"><button type="button" class="btn primary" id="save-prices">Save prices</button><span class="note" id="price-note"></span></div>
     </section>
@@ -432,6 +433,17 @@
           <tbody id="kyc"></tbody>
         </table>
       </div>
+    </section>
+
+    <section class="panel" aria-labelledby="zones-title">
+      <div class="panel-head"><h2 id="zones-title">Zones and price bands</h2><span class="soft" style="font-size:13px">Band = road distance from the nearest approved filling point, checked once per saved address</span></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Zone</th><th>Areas</th><th>Filling points</th><th>Addresses A / B / C</th><th class="r">12 KL A / B / C</th><th>GPS check, last 30 days</th></tr></thead>
+          <tbody id="zones"></tbody>
+        </table>
+      </div>
+      <p class="note" style="padding:0 18px 16px">Bands: A up to 5 km, B 5–10 km, C 10–15 km. Beyond 15 km is quoted by the operations team. Long-trip bonus paid to owners this week: ₹3,420 on 19 trips.</p>
     </section>
 
     <div class="two">
@@ -532,6 +544,16 @@
     { id: 6, owner: "Perur Water Carriers", plate: "TN 99 R 3308", kl: 12, src: "bore", eta: 30, km: 4.3, rating: 4.4, trips: 690, price: 1250, x: 185, y: 40, tds: 590, driver: "Babu N." }
   ];
   var PLATFORM_FEE = 29;
+  // Band rate card (₹): price depends on the address's band, never on the route a lorry takes.
+  var RATE = { 3: { A: 480, B: 530, C: 600 }, 6: { A: 750, B: 850, C: 950 }, 9: { A: 1100, B: 1230, C: 1400 }, 12: { A: 1400, B: 1550, C: 1750 }, 24: { A: 2500, B: 2750, C: 3050 } };
+  var BANDS = { A: "up to 5 km", B: "5–10 km", C: "10–15 km" };
+  // Each saved address is checked once: road distance from the nearest approved filling point.
+  var ADDRESSES = {
+    home: { band: "A", km: 3.4, zone: "North-East", fp: "Saravanampatti RO plant", hill: false },
+    site: { band: "B", km: 7.2, zone: "North-East", fp: "Saravanampatti RO plant", hill: false },
+    parents: { band: "C", km: 11.8, zone: "West", fp: "Vadavalli borewell point", hill: true }
+  };
+  var ADDON = { pump: 150, hill: 200 };
   var state = { src: "all", cap: "all", selected: 1, order: null, rating: 0 };
 
   function capMatch(t) {
@@ -545,7 +567,18 @@
       .sort(function (a, b) { return a.eta - b.eta; });
   }
   function selected() { return TANKERS.filter(function (t) { return t.id === state.selected; })[0] || null; }
-  function distanceFee(t) { return Math.round(t.km * 12); }
+  function addr() { return ADDRESSES[$("addr").value] || ADDRESSES.home; }
+  // Owners set their Band A price; bands B and C add NeerNow's fixed distance charge for that capacity.
+  function bandExtra(kl, band) { var r = RATE[kl]; return r ? r[band] - r.A : 0; }
+  function priceFor(t) { return t.price + bandExtra(t.kl, addr().band); }
+  function orderLines(t) {
+    var a = addr(), lines = [["Water, " + litres(t.kl) + " · Band " + a.band + " (" + BANDS[a.band] + ")", priceFor(t)]];
+    if (a.hill) lines.push(["Hill road access", ADDON.hill]);
+    if (state.pump) lines.push(["Pump to overhead tank", ADDON.pump]);
+    lines.push(["Platform fee", PLATFORM_FEE]);
+    return lines;
+  }
+  function orderTotal(t) { return orderLines(t).reduce(function (sum, l) { return sum + l[1]; }, 0); }
   function routePath(t) {
     var midX = [185, 385, 535].reduce(function (a, b) { return Math.abs(b - t.x) < Math.abs(a - t.x) ? b : a; });
     return "M" + t.x + " " + t.y + " H" + midX + " V" + (t.y < HOME.y ? 115 : 215) + " H" + HOME.x + " V" + HOME.y;
@@ -555,15 +588,16 @@
   function renderList() {
     var rows = visible();
     if (rows.length && !rows.some(function (t) { return t.id === state.selected; }) && !state.order) state.selected = rows[0].id;
-    $("count").textContent = rows.length + " available · sorted by arrival time";
+    var a = addr();
+    $("count").textContent = rows.length + " available · Band " + a.band + " prices for this address";
     $("list").innerHTML = rows.length ? rows.map(function (t) {
       var sel = t.id === state.selected;
       return '<li class="tanker' + (sel ? " selected" : "") + '">' +
         '<div class="cap"><b>' + t.kl + '</b><small>KL</small></div>' +
         '<div><div class="t-name">' + t.owner + ' <span class="pill info">Verified</span></div>' +
         '<div class="t-meta"><span class="plate">' + t.plate + '</span><span>' + srcLabel(t.src) + '</span>' + tdsPill(t) +
-        '<span class="num">' + t.rating.toFixed(1) + '★ · ' + t.trips.toLocaleString("en-IN") + ' trips · ' + t.km.toFixed(1) + ' km</span></div></div>' +
-        '<div class="t-right"><span class="price">' + rupee(t.price) + '</span><span class="eta num">' + t.eta + ' min</span>' +
+        '<span class="num">' + t.rating.toFixed(1) + '★ · ' + t.trips.toLocaleString("en-IN") + ' trips</span></div></div>' +
+        '<div class="t-right"><span class="price">' + rupee(priceFor(t)) + '</span><span class="eta num">' + t.eta + ' min</span>' +
         '<button type="button" class="btn pick" data-id="' + t.id + '"' + (state.order ? " disabled" : "") + '>' + (sel ? "Selected" : "Choose") + '</button></div></li>';
     }).join("") : '<li class="empty">No tanker matches these filters right now. Try another capacity or water source.</li>';
   }
@@ -596,17 +630,17 @@
     if (state.order) return renderTracking(el);
     var t = selected();
     if (!t) { el.innerHTML = '<h2>Your order</h2><p class="note">Choose a tanker from the list to see the price.</p>'; return; }
-    var dist = distanceFee(t), total = t.price + dist + PLATFORM_FEE;
+    var a = addr(), total = orderTotal(t);
     el.innerHTML =
       '<h2>Your order</h2>' +
       '<div class="sel-card"><span class="label">Tanker</span><strong>' + t.owner + '</strong>' +
       '<span class="t-meta"><span class="plate">' + t.plate + '</span><span>' + litres(t.kl) + ' · ' + srcLabel(t.src) + '</span></span>' +
       '<span class="t-meta">' + tdsPill(t) + '<span>Water test: 12 Sep 2026</span></span></div>' +
       '<div class="lines num">' +
-      '<div><span>Water, ' + litres(t.kl) + '</span><span>' + rupee(t.price) + '</span></div>' +
-      '<div><span>Distance, ' + t.km.toFixed(1) + ' km</span><span>' + rupee(dist) + '</span></div>' +
-      '<div><span>Platform fee</span><span>' + rupee(PLATFORM_FEE) + '</span></div>' +
-      '<div class="total"><span>Total</span><span>' + rupee(total) + '</span></div></div>' +
+      orderLines(t).map(function (l) { return '<div><span>' + l[0] + '</span><span>' + rupee(l[1]) + '</span></div>'; }).join("") +
+      '<div class="total"><span>Total, fixed</span><span>' + rupee(total) + '</span></div></div>' +
+      '<div class="note">One price for this address: ' + a.zone + ' zone, ' + a.km.toFixed(1) + ' km by road from the ' + a.fp + '. Traffic, detours or a lorry sent from further away never change it.' + (a.hill ? ' Includes hill road access for Maruthamalai side.' : '') + '</div>' +
+      '<label class="opt"><input type="checkbox" id="pump"' + (state.pump ? " checked" : "") + '> Pump to overhead tank (+' + rupee(ADDON.pump) + ')</label>' +
       '<label class="opt"><input type="checkbox" id="share-trip" checked> Share live trip with my family</label>' +
       '<button type="button" class="cta" id="place">Book ' + t.kl + ' KL tanker · ' + rupee(total) + '</button>' +
       '<div class="note">Arrives in about ' + t.eta + ' min. Free cancellation until filling starts. UPI is held and released to the owner only after delivery.</div>';
@@ -681,6 +715,10 @@
     state.selected = +g.dataset.id; renderCustomer();
   });
   $("builder").addEventListener("submit", function (e) { e.preventDefault(); });
+  $("addr").addEventListener("change", function () { if (!state.order) renderCustomer(); });
+  $("summary").addEventListener("change", function (e) {
+    if (e.target.id === "pump") { state.pump = e.target.checked; renderSummary(); }
+  });
 
   $("summary").addEventListener("click", function (e) {
     var id = e.target.id, o = state.order;
@@ -689,7 +727,7 @@
       state.order = {
         id: "NN-" + (48000 + Math.floor(Math.random() * 1999)), otp: String(1000 + Math.floor(Math.random() * 9000)),
         seal: String(20000 + Math.floor(Math.random() * 79999)), tanker: t, tick: 0, progress: 0, done: false,
-        total: t.price + distanceFee(t) + PLATFORM_FEE
+        total: orderTotal(t)
       };
       state.rating = 0;
       toast("Booked. " + t.owner + " is confirming your order.");
@@ -744,7 +782,7 @@
     if (!owner.request) { slot.innerHTML = '<div class="panel pad soft">No new requests. You will hear a sound and get an SMS when one arrives.</div>'; return; }
     slot.innerHTML = '<div class="request"><div><span class="label">New order · <span class="timer" id="req-timer">' + owner.requestLeft + ' s to respond</span></span>' +
       '<h3>12 KL treated water · Kurinji Nagar, Saravanampatti</h3>' +
-      '<p class="soft" style="font-size:14px">3.1 km from TN 66 BK 4420 · customer rating 4.9 · UPI held · you earn <b>' + rupee(1450 * 0.92 + 37) + '</b></p></div>' +
+      '<p class="soft" style="font-size:14px">Band A · customer rating 4.9 · UPI held · you earn <b>' + rupee(1450 * 0.92) + '</b>, fixed before you accept</p></div>' +
       '<div class="actions"><button type="button" class="btn" id="decline">Decline</button><button type="button" class="btn yellow" id="accept">Accept and assign Kumar D.</button></div></div>';
   }
   function renderFleet() {
@@ -756,7 +794,7 @@
   }
   function renderPrices() {
     $("price-grid").innerHTML = PRICES.map(function (p, i) {
-      return '<label for="price-' + i + '">' + p.kl + ' KL (' + litres(p.kl) + ')<input id="price-' + i + '" data-i="' + i + '" type="number" inputmode="numeric" value="' + p.v + '"' + (p.v > p.cap ? ' class="over"' : "") + '><span class="note">Zone cap ' + rupee(p.cap) + '</span></label>';
+      return '<label for="price-' + i + '">' + p.kl + ' KL · Band A<input id="price-' + i + '" data-i="' + i + '" type="number" inputmode="numeric" value="' + p.v + '"' + (p.v > p.cap ? ' class="over"' : "") + '><span class="note">Cap ' + rupee(p.cap) + ' · B +' + rupee(bandExtra(p.kl, "B")) + ' · C +' + rupee(bandExtra(p.kl, "C")) + '</span></label>';
     }).join("");
   }
   $("price-grid").addEventListener("input", function (e) {
@@ -798,6 +836,7 @@
     { lvl: "crit", title: "3 wrong delivery OTP attempts", sub: "Order NN-48199 · driver Babu N. · delivery paused", plate: "TN 99 R 3308" },
     { lvl: "warn", title: "Route deviation 1.4 km", sub: "TN 37 AZ 9930 · stopped 9 min off route near Vilankurichi", plate: "TN 37 AZ 9930" },
     { lvl: "warn", title: "Delivered 10.9 KL of 12 KL", sub: "Flow meter short by 9% · order NN-48160", plate: "TN 66 BK 4417" },
+    { lvl: "info", title: "Review West zone Band C price", sub: "GPS trips averaged 14.1 km, near the 15 km limit · owners' margin down 11%", plate: "West zone" },
     { lvl: "info", title: "Seal number mismatch at gate", sub: "Order NN-48191 · customer asked to recheck photo", plate: "TN 38 CX 2081" }
   ];
   var KYC = [
@@ -810,6 +849,22 @@
     { id: "NN-48188", issue: "Driver asked for extra cash", age: "3 h", pill: "warn" },
     { id: "NN-48201", issue: "Water looked muddy", age: "40 min", pill: "warn" }
   ];
+
+  var ZONES = [
+    { name: "North-East", areas: "Saravanampatti, Kalapatti, Peelamedu, Ganapathy", fps: 3, addr: [412, 188, 41], gps: ["On target", "good"] },
+    { name: "Central", areas: "Gandhipuram, RS Puram, Town Hall", fps: 2, addr: [305, 96, 12], gps: ["On target", "good"] },
+    { name: "West", areas: "Vadavalli, Thondamuthur, Maruthamalai Rd", fps: 1, addr: [88, 140, 97], gps: ["Band C too long", "warn"] },
+    { name: "South", areas: "Kuniyamuthur, Podanur, Sundarapuram", fps: 2, addr: [150, 121, 33], gps: ["On target", "good"] },
+    { name: "East", areas: "Singanallur, Ondipudur, Sowripalayam", fps: 2, addr: [201, 77, 18], gps: ["On target", "good"] }
+  ];
+  function renderZones() {
+    var r = RATE[12];
+    $("zones").innerHTML = ZONES.map(function (z) {
+      return '<tr><td><strong>' + z.name + '</strong></td><td class="soft">' + z.areas + '</td><td class="num">' + z.fps + '</td>' +
+        '<td class="num">' + z.addr.join(" / ") + '</td><td class="r">' + [r.A, r.B, r.C].map(rupee).join(" / ") + '</td>' +
+        '<td><span class="pill ' + z.gps[1] + '">' + z.gps[0] + '</span></td></tr>';
+    }).join("");
+  }
 
   function renderAdminMap() {
     var pts = [[300, 115, "good"], [535, 60, "yellow"], [90, 215, "bad"], [720, 115, "bad"], [385, 250, "good"], [185, 40, "bad"], [680, 215, "good"], [250, 170, "yellow"], [470, 80, "good"], [700, 250, "yellow"], [60, 115, "good"], [535, 180, "yellow"]];
@@ -874,7 +929,7 @@
 
   /* ---------- Boot ---------- */
   renderCustomer(); renderOwnerKpis(); renderRequest(); renderFleet(); renderPrices();
-  renderAdminMap(); renderAlerts(); renderKyc(); renderComplaints();
+  renderAdminMap(); renderZones(); renderAlerts(); renderKyc(); renderComplaints();
   var start = (location.hash || "").replace("#", "");
   showView(["customer", "owner", "admin"].indexOf(start) > -1 ? start : "customer");
 })();

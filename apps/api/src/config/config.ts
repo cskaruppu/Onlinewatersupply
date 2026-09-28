@@ -36,6 +36,8 @@ export class AppConfig {
   otpPerIpLimit!: number;
   otpPerIpWindowSeconds!: number;
 
+  platformFeePaise!: number;
+
   accessTtlSeconds!: number;
   refreshTtlDays!: number;
 }
@@ -111,6 +113,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
   c.otpPerPhoneWindowSeconds = int(env, 'OTP_PER_PHONE_WINDOW_SECONDS', 600);
   c.otpPerIpLimit = int(env, 'OTP_PER_IP_LIMIT', 10);
   c.otpPerIpWindowSeconds = int(env, 'OTP_PER_IP_WINDOW_SECONDS', 3600);
+
+  c.platformFeePaise = int(env, 'PLATFORM_FEE_PAISE', 2900);
 
   c.accessTtlSeconds = int(env, 'ACCESS_TOKEN_TTL_SECONDS', 900);
   c.refreshTtlDays = int(env, 'REFRESH_TOKEN_TTL_DAYS', 30);

@@ -32,6 +32,10 @@ A platform, launching first in Coimbatore, that connects households, apartments 
    - a per-IP request limit
    - an audit trail of every sign-in event
 
+### Pricing
+
+Prices are fixed per address: capacity × distance band (A up to 5 km, B 5–10 km, C 10–15 km of road from the nearest filling point), plus any add-ons and the platform fee. There are no per-km charges. The zones, filling points, bands, rate card with caps, add-ons and saved-address tables are in `apps/api/migrations/002_pricing.sql`, and the rules are in `apps/api/src/pricing/`. See the pricing section of `docs/platform-features.md` for the reasoning.
+
 ## Run it locally
 
 You need Docker (with Compose) and curl.
@@ -88,6 +92,7 @@ See [`deploy/openshift/README.md`](deploy/openshift/README.md) for real SMS, cus
 | `OTP_TTL_SECONDS`, `OTP_MAX_ATTEMPTS`, `OTP_LOCK_SECONDS` | 300 / 5 / 900 | Code lifetime, wrong-code limit, lock time |
 | `OTP_RESEND_SECONDS`, `OTP_PER_PHONE_LIMIT`, `OTP_PER_IP_LIMIT` | 30 / 3 per 10 min / 10 per hour | Rate limits |
 | `ACCESS_TOKEN_TTL_SECONDS`, `REFRESH_TOKEN_TTL_DAYS` | 900 / 30 | Session lengths |
+| `PLATFORM_FEE_PAISE` | 2900 | Platform fee per order (₹29) |
 
 The web app needs only `API_INTERNAL_URL` (default `http://localhost:3001`).
 
@@ -100,6 +105,7 @@ The web app needs only `API_INTERNAL_URL` (default `http://localhost:3001`).
 | `POST /api/v1/auth/refresh` | Rotate the session |
 | `POST /api/v1/auth/logout` | End the session |
 | `GET /api/v1/me` | Signed-in user (masked phone, role) |
+| `GET /api/v1/pricing/rate-card` | Public price list by capacity and distance band, add-ons, platform fee |
 | `GET /healthz`, `GET /readyz` | Liveness and readiness (database + Redis) |
 
 ## Product design

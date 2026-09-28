@@ -8,7 +8,7 @@
 - Start in one belt: Saravanampatti – Kalapatti – Peelamedu – Ganapathy (north-east, Sathy Road / Avinashi Road).
 - Sign up 20–30 tanker owners before launch; verify RC book, driving licence, and water source (licensed borewell / RO filling point).
 - Target customers: apartment associations, hostels, hotels, construction sites, then individual homes.
-- Fixed price card by capacity (3, 6, 9, 12, 24 KL) plus a per-km charge; publish it on the site.
+- Fixed price card by capacity (3, 6, 9, 12, 24 KL) and distance band (A up to 5 km, B 5–10 km, C 10–15 km from the nearest filling point). No per-km charges. Publish it on the site. See the pricing section of `docs/platform-features.md`.
 
 ## Phase 2: city-wide (months 3–6)
 - Add RS Puram, Gandhipuram, Singanallur, Kuniyamuthur, Thudiyalur, Podanur.

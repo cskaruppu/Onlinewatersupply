@@ -9,7 +9,7 @@ Most tanker apps only let you book a tanker. NeerNow also shows the customer how
 1. **Pay for what arrives.** A flow meter on the lorry outlet records the litres delivered. The bill shows the reading, and UPI money is held until delivery is confirmed.
 2. **Water quality you can see.** Each lorry shows its water source (treated/RO or borewell), its latest lab test date and a TDS reading. The driver measures TDS at the gate with a handheld meter and the reading goes on the bill.
 3. **Tamper-proof delivery.** The valve seal number is recorded at the filling point, checked against a photo at the gate, and water is released only after the customer's OTP.
-4. **Fair prices in summer.** Admin sets a price cap per zone, so owners cannot overcharge during shortages.
+4. **One fixed price per address.** Prices come from the customer's zone and distance band, never from the route a lorry drives. A cap on every price stops overcharging in summer.
 5. **Built for apartments and sites.** Weekly or daily subscriptions, bulk booking by the society, split billing across flats and a society wallet.
 6. **Local first.** Tamil and English, WhatsApp ordering, and cash on delivery for customers who don't use apps.
 
@@ -41,7 +41,7 @@ Most tanker apps only let you book a tanker. NeerNow also shows the customer how
 | Online/offline switch **(MVP)** | Owners receive orders only when online |
 | Order requests **(MVP)** | Accept or decline within 30 s. Declined or unanswered orders go to the next nearest lorry |
 | Driver app **(MVP)** | Navigation, customer OTP entry, seal photo, meter reading, background GPS |
-| Price card **(MVP)** | Per capacity, limited by the zone cap |
+| Price card **(MVP)** | Owner sets the band A price per capacity, up to the cap. Bands B and C add NeerNow's fixed distance charge, which goes to the owner in full |
 | Payouts **(MVP)** | Weekly UPI/bank transfer, commission shown, GST invoices |
 | Document expiry alerts | Insurance/FC/permit reminders 30 and 7 days before expiry. The lorry is suspended automatically once a document expires |
 | Performance | Acceptance rate, on-time rate, ratings, complaints |
@@ -55,12 +55,55 @@ Most tanker apps only let you book a tanker. NeerNow also shows the customer how
 | Owner verification queue **(MVP)** | Check each document. A lorry can be approved only when every document passes |
 | Orders and refunds **(MVP)** | Search, reassign, cancel, refund |
 | Complaints desk **(MVP)** | Set a response time per complaint type. Refunds adjust the owner's payout automatically |
-| Zone pricing and caps **(MVP)** | North-East, Central, West, South zones |
+| Zones, bands and caps **(MVP)** | North-East, Central, West, South and East zones; filling points; band rate card and caps; monthly GPS check of real trip kilometres per zone |
 | Safety and fraud alerts | See the alert rules below |
 | Roles | Super admin, operations, support, finance. Each role sees only what it needs |
 | Audit log | Every admin action is recorded with time, user and IP address, and can't be edited |
 | Reports | Orders, revenue, arrival times, busiest areas, summer demand |
 | Promotions | Coupons and first-order discounts |
+
+## Pricing: zones and distance bands
+
+Customers are **not** charged per kilometre. Coimbatore routes change with traffic, one-way streets, rain and detours. The nearest lorry may also be busy, so a lorry from farther away is sent. None of that should change what the customer pays.
+
+**Price = rate card price for the capacity and band + add-ons that apply + platform fee.** It's shown before booking and never changes afterwards.
+
+1. **Zones.** The city is split into North-East, Central, West, South and East, each with its own licensed filling points (borewells, RO plants).
+2. **Band per address, checked once.** When a customer saves an address, the server measures the **road** distance (Google Maps or Mappls) from the nearest active filling point and stores the band:
+
+   | Band | Road distance from nearest filling point |
+   |---|---|
+   | A | up to 5 km |
+   | B | 5 to 10 km |
+   | C | 10 to 15 km |
+   | — | beyond 15 km: quoted by operations, or not served in the pilot |
+
+3. **Rate card.** One price per capacity and band, each with a cap. Starting values for the pilot:
+
+   | Capacity | Band A | Band B | Band C |
+   |---|---|---|---|
+   | 3 KL | ₹480 | ₹530 | ₹600 |
+   | 6 KL | ₹750 | ₹850 | ₹950 |
+   | 9 KL | ₹1,100 | ₹1,230 | ₹1,400 |
+   | 12 KL | ₹1,400 | ₹1,550 | ₹1,750 |
+   | 24 KL | ₹2,500 | ₹2,750 | ₹3,050 |
+
+   These are starting estimates. Set the final numbers with the first owners from their real diesel, driver and water costs. As a guide: a loaded lorry spends about ₹23 per km on diesel, and a customer 8 km away means a 16 km round trip.
+
+4. **Add-ons, shown before booking:**
+   - pump to overhead tank ₹150
+   - hose longer than 30 m ₹100
+   - night or early-morning slot ₹150
+   - hill road access ₹200: set automatically for addresses such as the Maruthamalai side, and never chosen by the customer
+   - waiting beyond 15 minutes at the gate, ₹100 per 15 minutes: recorded by the driver app
+5. **Never charged to the customer:**
+   - traffic, detours or road closures
+   - a lorry sent from farther away because nearby ones were busy
+   - the lorry's own distance to the filling point
+6. **Keeping owners whole.** Owners are paid the band price minus commission. For assignments far longer than the band suggests, NeerNow pays a **long-trip bonus** so owners don't refuse far orders.
+7. **Monthly review.** GPS records the real kilometres of every trip. Each month operations compares them per zone and band, then moves addresses between bands, adds filling points, or adjusts prices where owners are losing money.
+
+The database design, rate card endpoint (`GET /api/v1/pricing/rate-card`) and pricing rules are implemented in `apps/api` (`migrations/002_pricing.sql`, `src/pricing/`). The band and hill-road flag are always read from the saved address on the server, never from what the customer's app sends.
 
 ## GPS tracking design
 
